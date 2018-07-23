@@ -78,8 +78,15 @@ class ShapeFit {
 				}
 				// accuracy function
 				else{
-
-					return  util::calculateIOU(polygon, target_polygon);
+					if (!util::isSimple(polygon) || !util::isSimple(target_polygon)){
+						std::cout << "image method" << std::endl;
+						return util::calculateIOUbyImage(polygon, target_polygon, 1000);
+					}
+					else{
+						std::cout << "cgal method" << std::endl;
+						return util::calculateIOU(polygon, target_polygon);
+					}
+					//return  util::calculateIOU(polygon, target_polygon);
 					//return util::calculatePoLIS(polygon, target_polygon);
 				}
 			}
@@ -96,5 +103,6 @@ protected:
 
 public:
 	static std::vector<cv::Point2f> fit(const std::vector<cv::Point2f>& target_polygon, const std::vector<cv::Point2f>& ini_points, bool bUseRaOpt, float angle_threshold_RA, bool bUseParallelOpt, float angle_threshold_parallel, bool bValidSymmetryLine, const std::vector<cv::Point2f>& symmetry_line);
+	static bool validRAorParallel(const std::vector<cv::Point2f>& polygon, bool bUseRaOpt, int ra_angle_threshold, bool bUseParallelOpt, int parallel_angle_threshold);
 };
 

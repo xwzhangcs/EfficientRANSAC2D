@@ -535,7 +535,7 @@ namespace util {
 			float angle_init = lineLineAngle(a_init, b_init, c_init, d_init);
 			// check
 			bool valid = false;
-			if (/*abs(angle_init) <= angle_threshold ||*/ abs(angle_init - 90) <= angle_threshold /*|| abs(angle_init - 180) <= angle_threshold*/)
+			if (abs(angle_init - 45) <= angle_threshold || abs(angle_init - 90) <= angle_threshold || abs(angle_init - 135) <= angle_threshold)
 				valid = true;
 
 			cv::Point2f a = cv::Point2f(polygon[first_start].x, polygon[first_start].y);
@@ -549,8 +549,8 @@ namespace util {
 				score += scoreFun(angle, angle_threshold);
 			}
 		}
-		//std::cout << "score of polygon is " << score << std::endl;
-		//std::cout << "-----------------" << std::endl;
+		std::cout << "score of polygon is " << score << std::endl;
+		std::cout << "-----------------" << std::endl;
 		return score / valid_segments;
 	}
 
@@ -585,7 +585,7 @@ namespace util {
 				cv::Point2f c = cv::Point2f(polygon[second_start].x, polygon[second_start].y);;
 				cv::Point2f d = cv::Point2f(polygon[second_end].x, polygon[second_end].y);
 				float angle = lineLineAngle(a, b, c, d);
-				//std::cout << angle_index++ << " angle is " << angle << std::endl;
+				std::cout << angle_index++ << " angle is " << angle << std::endl;
 				if (valid){
 					valid_segments++;
 					score += scoreFun(angle, angle_threshold);
@@ -593,29 +593,59 @@ namespace util {
 			}
 		}
 		//std::cout << "score of polygon is " << score << std::endl;
-		//std::cout << "-----------------" << std::endl;
+		std::cout << "-----------------" << std::endl;
 		return score / valid_segments;
 	}
 	
 	// define a score function based on the input angle of two lines
 	float scoreFun(float angle, float threshold){
 		float score = 0.0f;
+		// 0 ~ threshold
 		if (angle >= 0 && angle <= threshold)
 			score = (threshold-angle) / threshold;
-		else if (angle > threshold && angle <= 90 - threshold){
+		// threshold ~ 45 - threshold
+		else if (angle > threshold && angle <= 45 - threshold){
 			score = 0;
 		}
+		// 45 - threshold ~ 45
+		else if (angle > 45 - threshold && angle <= 45){
+			score = (angle - 45 + threshold) / threshold;
+		}
+		// 45 ~ 45 + threshold
+		else if (angle > 45 && angle <= 45 + threshold){
+			score = (45 + threshold - angle) / threshold;
+		}
+		// 45 + threshold ~ 90 - threshold
+		else if (angle > 45 + threshold && angle <= 90 - threshold){
+			score = 0;
+		}
+		// 90 - threshold ~ 90
 		else if (angle > 90 - threshold && angle <= 90){
 			score = (angle - 90 + threshold) / threshold;
 		}
+		// 90 ~ 90 + threshold
 		else if (angle > 90 && angle <= 90 + threshold){
 			score = (90 + threshold - angle) / threshold;
 		}
-		else if (angle > 90 + threshold && angle <= 180 - threshold){
+		// 90 + threshold ~ 135 - threshold
+		else if (angle > 90 + threshold && angle <= 135 - threshold){
 			score = 0;
 		}
+		//135 - threshold ~ 135
+		else if (angle > 135 - threshold && angle <= 135){
+			score = (angle - 135 + threshold) / threshold;
+		}
+		// 135 ~ 135 + threshold
+		else if (angle > 135 && angle <= 135 + threshold){
+			score = (135 + threshold - angle) / threshold;
+		}
+		// 135 + threshold ~ 180 - threshold
+		else if (angle > 135 + threshold && angle <= 180 - threshold){
+			score = 0;
+		}
+		// 180 - threshold ~ 180
 		else if (angle > 180 - threshold && angle <= 180){
-			score = (angle - 180 + threshold) / threshold;;
+			score = (angle - 180 + threshold) / threshold;
 		}
 		else
 			score = 0;

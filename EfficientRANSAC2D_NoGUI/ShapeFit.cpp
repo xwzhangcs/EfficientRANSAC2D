@@ -54,6 +54,14 @@ std::vector<cv::Point2f> ShapeFit::fit(const std::vector<cv::Point2f>& polygon, 
 		normalized_polygon_init[i] = cv::Point2f((ini_points[i].x - min_x) / max_unit, (ini_points[i].y - min_y) / max_unit);
 	}
 
+	// we need to check whether there are valid angles
+	if (bUseRaOpt || bUseParallelOpt){
+		if (!validRAorParallel(ini_points, bUseRaOpt, angle_threshold_RA, bUseParallelOpt, angle_threshold_parallel)){
+			std::cout << "No need to do optimizaiton" << std::endl;
+			return ini_points;
+		}
+	}
+
 	try {
 		column_vector starting_point(normalized_polygon_init.size() * 2);
 		for (int i = 0; i < normalized_polygon_init.size(); i++){
@@ -85,4 +93,51 @@ std::vector<cv::Point2f> ShapeFit::fit(const std::vector<cv::Point2f>& polygon, 
 	}
 
 	return{};
+}
+
+bool ShapeFit::validRAorParallel(const std::vector<cv::Point2f>& polygon, bool bUseRaOpt, int ra_angle_threshold, bool bUseParallelOpt, int parallel_angle_threshold){
+	int total_segments = polygon.size();
+	if (bUseRaOpt){
+		for (int i = 0; i < total_segments; i++){
+			int first_start = i;
+			int first_end = (i + 1) % total_segments;
+			int second_start = (i + 1) % total_segments;
+			int second_end = (i + 2) % total_segments;
+
+			// init angles
+			cv::Point2f a_init = cv::Point2f(polygon[first_start].x, polygon[first_start].y);
+			cv::Point2f b_init = cv::Point2f(polygon[first_end].x, polygon[first_end].y);
+			cv::Point2f c_init = cv::Point2f(polygon[second_start].x, polygon[second_start].y);;
+			cv::Point2f d_init = cv::Point2f(polygon[second_end].x, polygon[second_end].y);
+			float angle_init = util::lineLineAngle(a_init, b_init, c_init, d_init);
+			std::cout << i << " angle is " << angle_init << std::endl;
+			// check
+			if (abs(angle_init - 45) <= ra_angle_threshold || abs(angle_init - 90) <= ra_angle_threshold || abs(angle_init - 135) <= ra_angle_threshold){
+				return true;
+			}
+		}
+		return false;
+	}
+	if (bUseParallelOpt){
+		for (int i = 0; i < total_segments - 1; i++){
+			for (int j = i + 1; j < total_segments; j++){
+				int first_start = i;
+				int first_end = (i + 1) % total_segments;
+				int second_start = j;
+				int second_end = (j + 1) % total_segments;
+
+				// init angles
+				cv::Point2f a_init = cv::Point2f(polygon[first_start].x, polygon[first_start].y);
+				cv::Point2f b_init = cv::Point2f(polygon[first_end].x, polygon[first_end].y);
+				cv::Point2f c_init = cv::Point2f(polygon[second_start].x, polygon[second_start].y);;
+				cv::Point2f d_init = cv::Point2f(polygon[second_end].x, polygon[second_end].y);
+				float angle_init = util::lineLineAngle(a_init, b_init, c_init, d_init);
+				std::cout << i <<" to "<<j <<" angle is " << angle_init << std::endl;
+				// check
+				if (abs(angle_init) <= parallel_angle_threshold || abs(angle_init - 180) <= parallel_angle_threshold)
+					return true;
+			}
+		}
+		return false;
+	}
 }

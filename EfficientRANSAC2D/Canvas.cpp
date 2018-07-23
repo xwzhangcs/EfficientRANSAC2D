@@ -320,15 +320,15 @@ void Canvas::generateContours(int curve_num_iterations, int curve_min_points, fl
 		contours[i] = ShapeFit::fit(polygons[i].contour, contours_pre[i], bUseRaOpt, raThreahold, bUseParallelOpt, papallelThreahold, bvalid_symmetry_line, symmetry_lines[i]);
 		////////// DEBUG //////////
 		// output angles
-		{
-			std::vector<cv::Point2f> polygon_symmetry;
-			cv::Point2f a = symmetry_lines[i][0];
-			cv::Point2f b = symmetry_lines[i][1];
-			for (int j = 0; j < contours[i].size(); j++) {
-				polygon_symmetry.push_back(util::mirrorPoint(a, b, contours[i][j]));
-			}
-			std::cout << "debug iou is " <<util::calculateIOU(contours[i], polygon_symmetry)<<std::endl;
-		}
+		//{
+		//	std::vector<cv::Point2f> polygon_symmetry;
+		//	cv::Point2f a = symmetry_lines[i][0];
+		//	cv::Point2f b = symmetry_lines[i][1];
+		//	for (int j = 0; j < contours[i].size(); j++) {
+		//		polygon_symmetry.push_back(util::mirrorPoint(a, b, contours[i][j]));
+		//	}
+		//	std::cout << "debug iou is " <<util::calculateIOU(contours[i], polygon_symmetry)<<std::endl;
+		//}
 		// calculate IOU
 		if (util::isSimple(polygons[i].contour) && util::isSimple(contours[i]))
 			std::cout << "IOU = " << util::calculateIOU(polygons[i].contour, contours[i]) << std::endl;
