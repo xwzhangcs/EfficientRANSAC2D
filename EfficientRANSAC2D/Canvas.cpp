@@ -17,9 +17,13 @@ Canvas::Canvas(QWidget *parent) : QWidget(parent) {
 
 void Canvas::loadImage(const QString& filename) {
 	orig_image = QImage(filename).convertToFormat(QImage::Format_Grayscale8);
+	std::cout << "width() is " << width() << std::endl;
+	std::cout << "height() is " << height() << std::endl;
+	std::cout << "orig_image.width() is " << orig_image.width() << std::endl;
+	std::cout << "orig_image.height() is " << orig_image.height() << std::endl;
+
 	image_scale = std::min((float)width() / orig_image.width(), (float)height() / orig_image.height());
 	image = orig_image.scaled(orig_image.width() * image_scale, orig_image.height() * image_scale);
-
 	polygons.clear();
 	shapes.clear();
 	contours.clear();

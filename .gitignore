@@ -33,6 +33,7 @@ bld/
 # data/
 input/
 input_d3/
+test/
 
 # library
 #opencv3.4/
