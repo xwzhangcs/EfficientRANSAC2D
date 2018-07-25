@@ -26,24 +26,33 @@ ContourOptionDialog::ContourOptionDialog(QWidget *parent) : QDialog(parent) {
 	ui.lineEditContourAngleThreshold->setText("10");
 	ui.checkBoxSymmetryLine->setChecked(false);
 	ui.lineEditIOUThreshold->setText("90");
+	ui.lineEditSymmetryWeight->setText("0.25");
 
 	ui.checkBoxRA->setChecked(false);
 	ui.lineEditRAthreshold->setText("10");
+	ui.lineEditRaWeight->setText("0.25");
 
 	ui.checkBoxParallel->setChecked(false);
 	ui.lineEditParallelThreshold->setText("10");
+	ui.lineEditParallelWeight->setText("0.25");
 
+	ui.checkBoxAccuracy->setChecked(false);
+	ui.lineEditAccuracyWeight->setText("0.25");
+
+	ui.checkBoxUseLayers->setChecked(false);
 	connect(ui.checkBoxUseRA, SIGNAL(clicked()), this, SLOT(onUseRA()));
-	connect(ui.checkBoxSymmetryLine, SIGNAL(clicked()), this, SLOT(onUseSymmetryLine()));
+	connect(ui.checkBoxSymmetryLine, SIGNAL(clicked()), this, SLOT(onUseSymmetryLineOpt()));
 	connect(ui.checkBoxRA, SIGNAL(clicked()), this, SLOT(onUseRaOpt()));
 	connect(ui.checkBoxParallel, SIGNAL(clicked()), this, SLOT(onUseParallelOpt()));
 	connect(ui.pushButtonOK, SIGNAL(clicked()), this, SLOT(onOK()));
 	connect(ui.pushButtonCancel, SIGNAL(clicked()), this, SLOT(onCancel()));
+	connect(ui.checkBoxAccuracy, SIGNAL(clicked()), this, SLOT(onUseAccuracyOpt()));
 
 	onUseRA();
-	onUseSymmetryLine();
+	onUseSymmetryLineOpt();
 	onUseRaOpt();
 	onUseParallelOpt();
+	onUseAccuracyOpt();
 }
 
 ContourOptionDialog::~ContourOptionDialog() {
@@ -129,8 +138,12 @@ float ContourOptionDialog::getIOUThreshold(){
 	return ui.lineEditIOUThreshold->text().toFloat();
 }
 
-bool ContourOptionDialog::getUseSymmetryLine(){
+bool ContourOptionDialog::getUseSymmetryLineOpt(){
 	return ui.checkBoxSymmetryLine->isChecked();
+}
+
+float ContourOptionDialog::getSymmetryWeight(){
+	return ui.lineEditSymmetryWeight->text().toFloat();
 }
 
 bool ContourOptionDialog::getUseRaOpt(){
@@ -141,12 +154,33 @@ float ContourOptionDialog::getRaThreshold(){
 	return ui.lineEditRAthreshold->text().toFloat();
 }
 
+float ContourOptionDialog::getRaWeight(){
+	return ui.lineEditRaWeight->text().toFloat();
+}
+
+
 bool ContourOptionDialog::getUseParallelOpt(){
 	return ui.checkBoxParallel->isChecked();
 }
 
-float ContourOptionDialog::getParalleThreshold(){
+float ContourOptionDialog::getParallelThreshold(){
 	return ui.lineEditParallelThreshold->text().toFloat();
+}
+
+float ContourOptionDialog::getParallelWeight(){
+	return ui.lineEditParallelWeight->text().toFloat();
+}
+
+bool ContourOptionDialog::getUseAccuracyOpt(){
+	return ui.checkBoxAccuracy->isChecked();
+}
+
+float ContourOptionDialog::getAccuracyWeight(){
+	return ui.lineEditAccuracyWeight->text().toFloat();
+}
+
+bool ContourOptionDialog::getUseLayers(){
+	return ui.checkBoxUseLayers->isChecked();
 }
 
 void ContourOptionDialog::onUseRA() {
@@ -155,16 +189,23 @@ void ContourOptionDialog::onUseRA() {
 	ui.checkBoxRAOptimization->setEnabled(ui.checkBoxUseRA->isChecked());
 }
 
-void ContourOptionDialog::onUseSymmetryLine() {
+void ContourOptionDialog::onUseSymmetryLineOpt() {
 	ui.lineEditIOUThreshold->setEnabled(ui.checkBoxSymmetryLine->isChecked());
+	ui.lineEditSymmetryWeight->setEnabled(ui.checkBoxSymmetryLine->isChecked());
 }
 
 void ContourOptionDialog::onUseRaOpt(){
 	ui.lineEditRAthreshold->setEnabled(ui.checkBoxRA->isChecked());
+	ui.lineEditRaWeight->setEnabled(ui.checkBoxRA->isChecked());
 }
 
 void ContourOptionDialog::onUseParallelOpt(){
 	ui.lineEditParallelThreshold->setEnabled(ui.checkBoxParallel->isChecked());
+	ui.lineEditParallelWeight->setEnabled(ui.checkBoxParallel->isChecked());
+}
+
+void ContourOptionDialog::onUseAccuracyOpt(){
+	ui.lineEditAccuracyWeight->setEnabled(ui.checkBoxAccuracy->isChecked());
 }
 
 void ContourOptionDialog::onOK() {

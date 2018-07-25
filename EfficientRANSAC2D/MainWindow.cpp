@@ -94,7 +94,25 @@ void MainWindow::onGenerateContours() {
 			canvas.generateContoursWithRA(dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, dlg.getRAMaxError(), dlg.getRAClusterEpsilon(), dlg.getRAOptimization());
 		}
 		else {
-			canvas.generateContours(dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, dlg.getUseSymmetryLine(), dlg.getIOUThreshold(), dlg.getUseRaOpt(), dlg.getRaThreshold(), dlg.getUseParallelOpt(), dlg.getParalleThreshold());
+			//check the sum weight equals 1
+			float weight = 0.0f;
+			if (dlg.getUseSymmetryLineOpt())
+				weight += dlg.getSymmetryWeight();
+			if (dlg.getUseRaOpt())
+				weight += dlg.getRaWeight();
+			if (dlg.getUseParallelOpt())
+				weight += dlg.getParallelWeight();
+			if (dlg.getUseAccuracyOpt())
+				weight += dlg.getAccuracyWeight();
+			if (abs(weight - 1.0f) < 0.0001)
+			{
+				std::cout << "Success!!" << std::endl;
+			}
+			else{
+				std::cout << "Please check weight assignment!!!" << std::endl;
+				return;
+			}
+			canvas.generateContours(dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, dlg.getUseSymmetryLineOpt(), dlg.getIOUThreshold(), dlg.getSymmetryWeight(), dlg.getUseRaOpt(), dlg.getRaThreshold(), dlg.getRaWeight(), dlg.getUseParallelOpt(), dlg.getParallelThreshold(), dlg.getParallelWeight(), dlg.getUseAccuracyOpt(), dlg.getAccuracyWeight(), dlg.getUseLayers());
 		}
 		canvas.update();
 	}
@@ -103,6 +121,25 @@ void MainWindow::onGenerateContours() {
 void MainWindow::onTestBatchFiles(){
 	TestBatchFiles dlg;
 	if (dlg.exec()) {
+		//check the sum weight equals 1
+		float weight = 0.0f;
+		if (dlg.getUseSymmetryLineOpt())
+			weight += dlg.getSymmetryWeight();
+		if (dlg.getUseRaOpt())
+			weight += dlg.getRaWeight();
+		if (dlg.getUseParallelOpt())
+			weight += dlg.getParallelWeight();
+		if (dlg.getUseAccuracyOpt())
+			weight += dlg.getAccuracyWeight();
+		if (abs(weight - 1.0f) < 0.0001)
+		{
+			std::cout << "Success!!" << std::endl;
+		}
+		else{
+			std::cout << "Please check weight assignment!!!" << std::endl;
+			return;
+		}
+		return;
 		// read files one by one
 		QString input_dir = dlg.ui.lineEditInput->text();
 		QString output_dir = dlg.ui.lineEditOutput->text();
@@ -135,7 +172,7 @@ void MainWindow::onTestBatchFiles(){
 					canvas.generateContoursWithRA(dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, dlg.getRAMaxError(), dlg.getRAClusterEpsilon(), dlg.getRAOptimization());
 				}
 				else {
-					canvas.generateContours(dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, dlg.getUseSymmetryLine(), dlg.getIOUThreshold(), dlg.getUseRaOpt(), dlg.getRaThreshold(), dlg.getUseParallelOpt(), dlg.getParalleThreshold());
+					canvas.generateContours(dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, dlg.getUseSymmetryLineOpt(), dlg.getIOUThreshold(), dlg.getSymmetryWeight(), dlg.getUseRaOpt(), dlg.getRaThreshold(), dlg.getRaWeight(), dlg.getUseParallelOpt(), dlg.getParallelThreshold(), dlg.getParallelWeight(), dlg.getUseAccuracyOpt(), dlg.getAccuracyWeight(), dlg.getUseLayers());
 				}
 				canvas.update();
 

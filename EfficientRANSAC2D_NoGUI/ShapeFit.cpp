@@ -6,7 +6,7 @@ ShapeFit::ShapeFit() {
 ShapeFit::~ShapeFit() {
 }
 
-std::vector<cv::Point2f> ShapeFit::fit(const std::vector<cv::Point2f>& polygon, const std::vector<cv::Point2f>& ini_points, bool bUseRaOpt, float angle_threshold_RA, bool bUseParallelOpt, float angle_threshold_parallel, bool bValidSymmetryLine, const std::vector<cv::Point2f>& symmetry_line) {
+std::vector<cv::Point2f> ShapeFit::fit(const std::vector<cv::Point2f>& polygon, const std::vector<cv::Point2f>& ini_points, bool bUseRaOpt, float angle_threshold_RA, float raWeight, bool bUseParallelOpt, float angle_threshold_parallel, float parallelWeight, bool bValidSymmetryLine, const std::vector<cv::Point2f>& symmetry_line, float symmetryWeight, bool bUseAccuracyOpt, float accuracyWeight) {
 	float min_x = std::numeric_limits<float>::max();
 	float min_y = std::numeric_limits<float>::max();
 	float max_x = -std::numeric_limits<float>::max();

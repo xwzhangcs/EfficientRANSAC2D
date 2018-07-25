@@ -26,28 +26,39 @@ TestBatchFiles::TestBatchFiles(QWidget *parent)
 
 	ui.lineEditContourMaxError->setText("20");
 	ui.lineEditContourAngleThreshold->setText("10");
+
 	ui.checkBoxSymmetryLine->setChecked(false);
 	ui.lineEditIOUThreshold->setText("90");
+	ui.lineEditSymmetryWeight->setText("0.25");
 
 	ui.checkBoxRA->setChecked(false);
 	ui.lineEditRAthreshold->setText("10");
+	ui.lineEditRaWeight->setText("0.25");
 
 	ui.checkBoxParallel->setChecked(false);
 	ui.lineEditParallelThreshold->setText("10");
+	ui.lineEditParallelWeight->setText("0.25");
 
+	ui.checkBoxAccuracy->setChecked(false);
+	ui.lineEditAccuracyWeight->setText("0.25");
+
+	ui.checkBoxUseLayers->setChecked(false);
 	connect(ui.checkBoxUseRA, SIGNAL(clicked()), this, SLOT(onUseRA()));
 	connect(ui.pushButtonOK, SIGNAL(clicked()), this, SLOT(onOK()));
-	connect(ui.checkBoxSymmetryLine, SIGNAL(clicked()), this, SLOT(onUseSymmetryLine()));
+	connect(ui.checkBoxSymmetryLine, SIGNAL(clicked()), this, SLOT(onUseSymmetryLineOpt()));
 	connect(ui.checkBoxRA, SIGNAL(clicked()), this, SLOT(onUseRaOpt()));
 	connect(ui.checkBoxParallel, SIGNAL(clicked()), this, SLOT(onUseParallelOpt()));
 	connect(ui.pushButtonCancel, SIGNAL(clicked()), this, SLOT(onCancel()));
 	connect(ui.pushButtonInput, SIGNAL(clicked()), this, SLOT(onGetInputPath()));
 	connect(ui.pushButtonOutput, SIGNAL(clicked()), this, SLOT(onGetOutputPath()));
+	connect(ui.pushButtonOutput, SIGNAL(clicked()), this, SLOT(onGetOutputPath()));
+	connect(ui.checkBoxAccuracy, SIGNAL(clicked()), this, SLOT(onUseAccuracyOpt()));
 
 	onUseRA();
-	onUseSymmetryLine();
+	onUseSymmetryLineOpt();
 	onUseRaOpt();
 	onUseParallelOpt();
+	onUseAccuracyOpt();
 }
 
 TestBatchFiles::~TestBatchFiles()
@@ -134,8 +145,12 @@ float TestBatchFiles::getIOUThreshold(){
 	return ui.lineEditIOUThreshold->text().toFloat();
 }
 
-bool TestBatchFiles::getUseSymmetryLine(){
+bool TestBatchFiles::getUseSymmetryLineOpt(){
 	return ui.checkBoxSymmetryLine->isChecked();
+}
+
+float TestBatchFiles::getSymmetryWeight(){
+	return ui.lineEditSymmetryWeight->text().toFloat();
 }
 
 bool TestBatchFiles::getUseRaOpt(){
@@ -146,12 +161,32 @@ float TestBatchFiles::getRaThreshold(){
 	return ui.lineEditRAthreshold->text().toFloat();
 }
 
+float TestBatchFiles::getRaWeight(){
+	return ui.lineEditRaWeight->text().toFloat();
+}
+
 bool TestBatchFiles::getUseParallelOpt(){
 	return ui.checkBoxParallel->isChecked();
 }
 
-float TestBatchFiles::getParalleThreshold(){
+float TestBatchFiles::getParallelThreshold(){
 	return ui.lineEditParallelThreshold->text().toFloat();
+}
+
+float TestBatchFiles::getParallelWeight(){
+	return ui.lineEditParallelWeight->text().toFloat();
+}
+
+bool TestBatchFiles::getUseAccuracyOpt(){
+	return ui.checkBoxAccuracy->isChecked();
+}
+
+float TestBatchFiles::getAccuracyWeight(){
+	return ui.lineEditAccuracyWeight->text().toFloat();
+}
+
+bool TestBatchFiles::getUseLayers(){
+	return ui.checkBoxUseLayers->isChecked();
 }
 
 void TestBatchFiles::onUseRA() {
@@ -174,16 +209,23 @@ void TestBatchFiles::onGetOutputPath(){
 	}
 }
 
-void TestBatchFiles::onUseSymmetryLine() {
+void TestBatchFiles::onUseSymmetryLineOpt() {
 	ui.lineEditIOUThreshold->setEnabled(ui.checkBoxSymmetryLine->isChecked());
+	ui.lineEditSymmetryWeight->setEnabled(ui.checkBoxSymmetryLine->isChecked());
 }
 
 void TestBatchFiles::onUseRaOpt(){
 	ui.lineEditRAthreshold->setEnabled(ui.checkBoxRA->isChecked());
+	ui.lineEditRaWeight->setEnabled(ui.checkBoxRA->isChecked());
 }
 
 void TestBatchFiles::onUseParallelOpt(){
 	ui.lineEditParallelThreshold->setEnabled(ui.checkBoxParallel->isChecked());
+	ui.lineEditParallelWeight->setEnabled(ui.checkBoxParallel->isChecked());
+}
+
+void TestBatchFiles::onUseAccuracyOpt(){
+	ui.lineEditAccuracyWeight->setEnabled(ui.checkBoxAccuracy->isChecked());
 }
 
 void TestBatchFiles::onOK() {

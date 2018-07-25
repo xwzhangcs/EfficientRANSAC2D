@@ -33,13 +33,21 @@ public:
 	float getContourAngleThreshold();
 
 	float getIOUThreshold();
-	bool getUseSymmetryLine();
+	bool getUseSymmetryLineOpt();
+	float getSymmetryWeight();
 
 	bool getUseRaOpt();
 	float getRaThreshold();
+	float getRaWeight();
 
 	bool getUseParallelOpt();
-	float getParalleThreshold();
+	float getParallelThreshold();
+	float getParallelWeight();
+
+	bool getUseAccuracyOpt();
+	float getAccuracyWeight();
+
+	bool getUseLayers();
 
 public:
 	Ui::TestBatchFiles ui;
@@ -48,9 +56,10 @@ public slots:
 	void onUseRA();
 	void onGetInputPath();
 	void onGetOutputPath();
-	void onUseSymmetryLine();
+	void onUseSymmetryLineOpt();
 	void onUseRaOpt();
 	void onUseParallelOpt();
+	void onUseAccuracyOpt();
 	void onOK();
 	void onCancel();
 };

@@ -224,7 +224,8 @@ void Canvas::detectCurvesLinesWithRA(int curve_num_iterations, int curve_min_poi
 	}
 }
 
-void Canvas::generateContours(int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, bool bUseSymmetryLine, float iouThreahold, bool bUseRaOpt, float raThreahold, bool bUseParallelOpt, float papallelThreahold) {
+void Canvas::generateContours(int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, bool bUseSymmetryLine, float iouThreahold, float symmetryWeight, bool bUseRaOpt, float raThreahold, float raWeight, bool bUseParallelOpt, float papallelThreahold, float parallelWeight, bool bUseAccuracyOpt, float accuracyWeight, bool bUserLayers)
+{
 	detectContours();
 
 	// detect principal orientation
@@ -321,7 +322,7 @@ void Canvas::generateContours(int curve_num_iterations, int curve_min_points, fl
 			//	symmetry_lines_signal[i] = false;
 			//}
 		}
-		contours[i] = ShapeFit::fit(polygons[i].contour, contours_pre[i], bUseRaOpt, raThreahold, bUseParallelOpt, papallelThreahold, bvalid_symmetry_line, symmetry_lines[i]);
+		contours[i] = ShapeFit::fit(polygons[i].contour, contours_pre[i], bUseRaOpt, raThreahold, raWeight, bUseParallelOpt, papallelThreahold, parallelWeight, bvalid_symmetry_line, symmetry_lines[i], symmetryWeight, bUseAccuracyOpt, accuracyWeight);
 		////////// DEBUG //////////
 		// output angles
 		//{

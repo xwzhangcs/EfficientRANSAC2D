@@ -82,18 +82,28 @@ public:
     QLineEdit *lineEditParallelThreshold;
     QLabel *label_25;
     QLabel *label_26;
+    QLineEdit *lineEditSymmetryWeight;
+    QLabel *label_29;
+    QLineEdit *lineEditRaWeight;
+    QLabel *label_30;
+    QLabel *label_31;
+    QLineEdit *lineEditParallelWeight;
+    QLineEdit *lineEditAccuracyWeight;
+    QLabel *label_32;
+    QCheckBox *checkBoxAccuracy;
+    QCheckBox *checkBoxUseLayers;
 
     void setupUi(QDialog *ContourOptionDialog)
     {
         if (ContourOptionDialog->objectName().isEmpty())
             ContourOptionDialog->setObjectName(QStringLiteral("ContourOptionDialog"));
-        ContourOptionDialog->resize(301, 689);
+        ContourOptionDialog->resize(301, 808);
         pushButtonOK = new QPushButton(ContourOptionDialog);
         pushButtonOK->setObjectName(QStringLiteral("pushButtonOK"));
-        pushButtonOK->setGeometry(QRect(40, 650, 91, 31));
+        pushButtonOK->setGeometry(QRect(30, 770, 91, 31));
         groupBox = new QGroupBox(ContourOptionDialog);
         groupBox->setObjectName(QStringLiteral("groupBox"));
-        groupBox->setGeometry(QRect(10, 10, 281, 171));
+        groupBox->setGeometry(QRect(10, 40, 281, 171));
         label = new QLabel(groupBox);
         label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(10, 40, 81, 16));
@@ -141,10 +151,10 @@ public:
         label_14->setGeometry(QRect(250, 100, 31, 16));
         pushButtonCancel = new QPushButton(ContourOptionDialog);
         pushButtonCancel->setObjectName(QStringLiteral("pushButtonCancel"));
-        pushButtonCancel->setGeometry(QRect(170, 650, 91, 31));
+        pushButtonCancel->setGeometry(QRect(160, 770, 91, 31));
         groupBox_2 = new QGroupBox(ContourOptionDialog);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
-        groupBox_2->setGeometry(QRect(10, 190, 281, 241));
+        groupBox_2->setGeometry(QRect(10, 220, 281, 241));
         lineEditLineMinLength = new QLineEdit(groupBox_2);
         lineEditLineMinLength->setObjectName(QStringLiteral("lineEditLineMinLength"));
         lineEditLineMinLength->setGeometry(QRect(140, 100, 101, 20));
@@ -204,7 +214,7 @@ public:
         label_20->setGeometry(QRect(10, 190, 131, 16));
         groupBox_3 = new QGroupBox(ContourOptionDialog);
         groupBox_3->setObjectName(QStringLiteral("groupBox_3"));
-        groupBox_3->setGeometry(QRect(10, 440, 281, 201));
+        groupBox_3->setGeometry(QRect(10, 470, 281, 291));
         label_16 = new QLabel(groupBox_3);
         label_16->setObjectName(QStringLiteral("label_16"));
         label_16->setGeometry(QRect(10, 20, 91, 16));
@@ -234,28 +244,58 @@ public:
         label_22->setGeometry(QRect(250, 80, 47, 13));
         checkBoxRA = new QCheckBox(groupBox_3);
         checkBoxRA->setObjectName(QStringLiteral("checkBoxRA"));
-        checkBoxRA->setGeometry(QRect(10, 100, 81, 20));
+        checkBoxRA->setGeometry(QRect(10, 120, 81, 20));
         label_23 = new QLabel(groupBox_3);
         label_23->setObjectName(QStringLiteral("label_23"));
-        label_23->setGeometry(QRect(10, 120, 121, 16));
+        label_23->setGeometry(QRect(10, 140, 121, 16));
         lineEditRAthreshold = new QLineEdit(groupBox_3);
         lineEditRAthreshold->setObjectName(QStringLiteral("lineEditRAthreshold"));
-        lineEditRAthreshold->setGeometry(QRect(140, 120, 101, 22));
+        lineEditRAthreshold->setGeometry(QRect(140, 140, 101, 22));
         label_24 = new QLabel(groupBox_3);
         label_24->setObjectName(QStringLiteral("label_24"));
-        label_24->setGeometry(QRect(250, 120, 31, 16));
+        label_24->setGeometry(QRect(250, 140, 31, 16));
         checkBoxParallel = new QCheckBox(groupBox_3);
         checkBoxParallel->setObjectName(QStringLiteral("checkBoxParallel"));
-        checkBoxParallel->setGeometry(QRect(10, 140, 121, 20));
+        checkBoxParallel->setGeometry(QRect(10, 180, 121, 20));
         lineEditParallelThreshold = new QLineEdit(groupBox_3);
         lineEditParallelThreshold->setObjectName(QStringLiteral("lineEditParallelThreshold"));
-        lineEditParallelThreshold->setGeometry(QRect(140, 160, 101, 22));
+        lineEditParallelThreshold->setGeometry(QRect(140, 200, 101, 22));
         label_25 = new QLabel(groupBox_3);
         label_25->setObjectName(QStringLiteral("label_25"));
-        label_25->setGeometry(QRect(250, 160, 31, 16));
+        label_25->setGeometry(QRect(250, 200, 31, 16));
         label_26 = new QLabel(groupBox_3);
         label_26->setObjectName(QStringLiteral("label_26"));
-        label_26->setGeometry(QRect(10, 160, 94, 16));
+        label_26->setGeometry(QRect(10, 200, 94, 16));
+        lineEditSymmetryWeight = new QLineEdit(groupBox_3);
+        lineEditSymmetryWeight->setObjectName(QStringLiteral("lineEditSymmetryWeight"));
+        lineEditSymmetryWeight->setGeometry(QRect(140, 100, 101, 20));
+        label_29 = new QLabel(groupBox_3);
+        label_29->setObjectName(QStringLiteral("label_29"));
+        label_29->setGeometry(QRect(10, 100, 47, 13));
+        lineEditRaWeight = new QLineEdit(groupBox_3);
+        lineEditRaWeight->setObjectName(QStringLiteral("lineEditRaWeight"));
+        lineEditRaWeight->setGeometry(QRect(140, 160, 101, 20));
+        label_30 = new QLabel(groupBox_3);
+        label_30->setObjectName(QStringLiteral("label_30"));
+        label_30->setGeometry(QRect(10, 160, 47, 13));
+        label_31 = new QLabel(groupBox_3);
+        label_31->setObjectName(QStringLiteral("label_31"));
+        label_31->setGeometry(QRect(10, 220, 47, 13));
+        lineEditParallelWeight = new QLineEdit(groupBox_3);
+        lineEditParallelWeight->setObjectName(QStringLiteral("lineEditParallelWeight"));
+        lineEditParallelWeight->setGeometry(QRect(140, 220, 101, 20));
+        lineEditAccuracyWeight = new QLineEdit(groupBox_3);
+        lineEditAccuracyWeight->setObjectName(QStringLiteral("lineEditAccuracyWeight"));
+        lineEditAccuracyWeight->setGeometry(QRect(140, 260, 101, 20));
+        label_32 = new QLabel(groupBox_3);
+        label_32->setObjectName(QStringLiteral("label_32"));
+        label_32->setGeometry(QRect(10, 260, 47, 13));
+        checkBoxAccuracy = new QCheckBox(groupBox_3);
+        checkBoxAccuracy->setObjectName(QStringLiteral("checkBoxAccuracy"));
+        checkBoxAccuracy->setGeometry(QRect(10, 240, 131, 17));
+        checkBoxUseLayers = new QCheckBox(ContourOptionDialog);
+        checkBoxUseLayers->setObjectName(QStringLiteral("checkBoxUseLayers"));
+        checkBoxUseLayers->setGeometry(QRect(10, 20, 70, 17));
 
         retranslateUi(ContourOptionDialog);
 
@@ -301,6 +341,12 @@ public:
         checkBoxParallel->setText(QApplication::translate("ContourOptionDialog", "Use parallelism:", Q_NULLPTR));
         label_25->setText(QApplication::translate("ContourOptionDialog", "[deg]", Q_NULLPTR));
         label_26->setText(QApplication::translate("ContourOptionDialog", "Angle threshold:", Q_NULLPTR));
+        label_29->setText(QApplication::translate("ContourOptionDialog", "Weight:", Q_NULLPTR));
+        label_30->setText(QApplication::translate("ContourOptionDialog", "Weight:", Q_NULLPTR));
+        label_31->setText(QApplication::translate("ContourOptionDialog", "Weight:", Q_NULLPTR));
+        label_32->setText(QApplication::translate("ContourOptionDialog", "Weight:", Q_NULLPTR));
+        checkBoxAccuracy->setText(QApplication::translate("ContourOptionDialog", "Use accuracy", Q_NULLPTR));
+        checkBoxUseLayers->setText(QApplication::translate("ContourOptionDialog", "Use layers", Q_NULLPTR));
     } // retranslateUi
 
 };

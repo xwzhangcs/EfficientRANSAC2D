@@ -102,7 +102,7 @@ protected:
 	~ShapeFit();
 
 public:
-	static std::vector<cv::Point2f> fit(const std::vector<cv::Point2f>& target_polygon, const std::vector<cv::Point2f>& ini_points, bool bUseRaOpt, float angle_threshold_RA, bool bUseParallelOpt, float angle_threshold_parallel, bool bValidSymmetryLine, const std::vector<cv::Point2f>& symmetry_line);
+	static std::vector<cv::Point2f> fit(const std::vector<cv::Point2f>& target_polygon, const std::vector<cv::Point2f>& ini_points, bool bUseRaOpt, float angle_threshold_RA, float raWeight, bool bUseParallelOpt, float angle_threshold_parallel, float parallelWeight, bool bValidSymmetryLine, const std::vector<cv::Point2f>& symmetry_line, float symmetryWeight, bool bUseAccuracyOpt, float accuracyWeight);
 	static bool validRAorParallel(const std::vector<cv::Point2f>& polygon, bool bUseRaOpt, int ra_angle_threshold, bool bUseParallelOpt, int parallel_angle_threshold);
 };
 

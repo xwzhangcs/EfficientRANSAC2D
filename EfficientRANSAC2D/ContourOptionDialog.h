@@ -36,19 +36,28 @@ public:
 	float getContourAngleThreshold();
 
 	float getIOUThreshold();
-	bool getUseSymmetryLine();
+	bool getUseSymmetryLineOpt();
+	float getSymmetryWeight();
 
 	bool getUseRaOpt();
 	float getRaThreshold();
+	float getRaWeight();
 
 	bool getUseParallelOpt();
-	float getParalleThreshold();
+	float getParallelThreshold();
+	float getParallelWeight();
+
+	bool getUseAccuracyOpt();
+	float getAccuracyWeight();
+
+	bool getUseLayers();
 
 public slots:
 	void onUseRA();
 	void onOK();
 	void onCancel();
-	void onUseSymmetryLine();
+	void onUseSymmetryLineOpt();
 	void onUseRaOpt();
 	void onUseParallelOpt();
+	void onUseAccuracyOpt();
 };

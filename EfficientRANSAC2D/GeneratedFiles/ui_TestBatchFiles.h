@@ -46,6 +46,15 @@ public:
     QLabel *label_27;
     QLineEdit *lineEditRAthreshold;
     QLabel *label_28;
+    QLabel *label_29;
+    QLineEdit *lineEditSymmetryWeight;
+    QLineEdit *lineEditRaWeight;
+    QLabel *label_30;
+    QLineEdit *lineEditParallelWeight;
+    QLabel *label_31;
+    QLabel *label_32;
+    QLineEdit *lineEditAccuracyWeight;
+    QCheckBox *checkBoxAccuracy;
     QGroupBox *groupBox;
     QLabel *label;
     QLineEdit *lineEditCurveMinAngle;
@@ -89,21 +98,22 @@ public:
     QLineEdit *lineEditOutput;
     QPushButton *pushButtonInput;
     QPushButton *pushButtonOutput;
+    QCheckBox *checkBoxUseLayers;
 
     void setupUi(QDialog *TestBatchFiles)
     {
         if (TestBatchFiles->objectName().isEmpty())
             TestBatchFiles->setObjectName(QStringLiteral("TestBatchFiles"));
-        TestBatchFiles->resize(319, 771);
+        TestBatchFiles->resize(319, 898);
         pushButtonOK = new QPushButton(TestBatchFiles);
         pushButtonOK->setObjectName(QStringLiteral("pushButtonOK"));
-        pushButtonOK->setGeometry(QRect(40, 730, 91, 31));
+        pushButtonOK->setGeometry(QRect(40, 860, 91, 31));
         pushButtonCancel = new QPushButton(TestBatchFiles);
         pushButtonCancel->setObjectName(QStringLiteral("pushButtonCancel"));
-        pushButtonCancel->setGeometry(QRect(170, 730, 91, 31));
+        pushButtonCancel->setGeometry(QRect(170, 860, 91, 31));
         groupBox_3 = new QGroupBox(TestBatchFiles);
         groupBox_3->setObjectName(QStringLiteral("groupBox_3"));
-        groupBox_3->setGeometry(QRect(10, 530, 281, 191));
+        groupBox_3->setGeometry(QRect(10, 560, 281, 291));
         label_16 = new QLabel(groupBox_3);
         label_16->setObjectName(QStringLiteral("label_16"));
         label_16->setGeometry(QRect(10, 20, 91, 16));
@@ -133,31 +143,58 @@ public:
         checkBoxSymmetryLine->setGeometry(QRect(10, 60, 131, 17));
         checkBoxParallel = new QCheckBox(groupBox_3);
         checkBoxParallel->setObjectName(QStringLiteral("checkBoxParallel"));
-        checkBoxParallel->setGeometry(QRect(10, 140, 121, 20));
+        checkBoxParallel->setGeometry(QRect(10, 180, 121, 20));
         label_25 = new QLabel(groupBox_3);
         label_25->setObjectName(QStringLiteral("label_25"));
-        label_25->setGeometry(QRect(10, 120, 121, 16));
+        label_25->setGeometry(QRect(10, 140, 121, 16));
         label_26 = new QLabel(groupBox_3);
         label_26->setObjectName(QStringLiteral("label_26"));
-        label_26->setGeometry(QRect(250, 160, 31, 16));
+        label_26->setGeometry(QRect(250, 200, 31, 21));
         lineEditParallelThreshold = new QLineEdit(groupBox_3);
         lineEditParallelThreshold->setObjectName(QStringLiteral("lineEditParallelThreshold"));
-        lineEditParallelThreshold->setGeometry(QRect(140, 160, 101, 22));
+        lineEditParallelThreshold->setGeometry(QRect(140, 200, 101, 22));
         checkBoxRA = new QCheckBox(groupBox_3);
         checkBoxRA->setObjectName(QStringLiteral("checkBoxRA"));
-        checkBoxRA->setGeometry(QRect(10, 100, 81, 20));
+        checkBoxRA->setGeometry(QRect(10, 120, 81, 20));
         label_27 = new QLabel(groupBox_3);
         label_27->setObjectName(QStringLiteral("label_27"));
-        label_27->setGeometry(QRect(250, 120, 31, 16));
+        label_27->setGeometry(QRect(250, 140, 31, 16));
         lineEditRAthreshold = new QLineEdit(groupBox_3);
         lineEditRAthreshold->setObjectName(QStringLiteral("lineEditRAthreshold"));
-        lineEditRAthreshold->setGeometry(QRect(140, 120, 101, 22));
+        lineEditRAthreshold->setGeometry(QRect(140, 140, 101, 22));
         label_28 = new QLabel(groupBox_3);
         label_28->setObjectName(QStringLiteral("label_28"));
-        label_28->setGeometry(QRect(10, 160, 94, 16));
+        label_28->setGeometry(QRect(10, 200, 94, 16));
+        label_29 = new QLabel(groupBox_3);
+        label_29->setObjectName(QStringLiteral("label_29"));
+        label_29->setGeometry(QRect(10, 100, 47, 13));
+        lineEditSymmetryWeight = new QLineEdit(groupBox_3);
+        lineEditSymmetryWeight->setObjectName(QStringLiteral("lineEditSymmetryWeight"));
+        lineEditSymmetryWeight->setGeometry(QRect(140, 100, 101, 20));
+        lineEditRaWeight = new QLineEdit(groupBox_3);
+        lineEditRaWeight->setObjectName(QStringLiteral("lineEditRaWeight"));
+        lineEditRaWeight->setGeometry(QRect(140, 160, 101, 20));
+        label_30 = new QLabel(groupBox_3);
+        label_30->setObjectName(QStringLiteral("label_30"));
+        label_30->setGeometry(QRect(10, 160, 47, 13));
+        lineEditParallelWeight = new QLineEdit(groupBox_3);
+        lineEditParallelWeight->setObjectName(QStringLiteral("lineEditParallelWeight"));
+        lineEditParallelWeight->setGeometry(QRect(140, 220, 101, 20));
+        label_31 = new QLabel(groupBox_3);
+        label_31->setObjectName(QStringLiteral("label_31"));
+        label_31->setGeometry(QRect(10, 220, 47, 13));
+        label_32 = new QLabel(groupBox_3);
+        label_32->setObjectName(QStringLiteral("label_32"));
+        label_32->setGeometry(QRect(10, 260, 47, 13));
+        lineEditAccuracyWeight = new QLineEdit(groupBox_3);
+        lineEditAccuracyWeight->setObjectName(QStringLiteral("lineEditAccuracyWeight"));
+        lineEditAccuracyWeight->setGeometry(QRect(140, 260, 101, 20));
+        checkBoxAccuracy = new QCheckBox(groupBox_3);
+        checkBoxAccuracy->setObjectName(QStringLiteral("checkBoxAccuracy"));
+        checkBoxAccuracy->setGeometry(QRect(10, 240, 131, 17));
         groupBox = new QGroupBox(TestBatchFiles);
         groupBox->setObjectName(QStringLiteral("groupBox"));
-        groupBox->setGeometry(QRect(10, 100, 281, 171));
+        groupBox->setGeometry(QRect(10, 130, 281, 171));
         label = new QLabel(groupBox);
         label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(10, 40, 81, 16));
@@ -205,7 +242,7 @@ public:
         label_14->setGeometry(QRect(250, 100, 31, 16));
         groupBox_2 = new QGroupBox(TestBatchFiles);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
-        groupBox_2->setGeometry(QRect(10, 280, 281, 241));
+        groupBox_2->setGeometry(QRect(10, 310, 281, 241));
         lineEditLineMinLength = new QLineEdit(groupBox_2);
         lineEditLineMinLength->setObjectName(QStringLiteral("lineEditLineMinLength"));
         lineEditLineMinLength->setGeometry(QRect(140, 100, 101, 20));
@@ -265,7 +302,7 @@ public:
         label_20->setGeometry(QRect(10, 190, 131, 16));
         groupBox_4 = new QGroupBox(TestBatchFiles);
         groupBox_4->setObjectName(QStringLiteral("groupBox_4"));
-        groupBox_4->setGeometry(QRect(10, 10, 281, 81));
+        groupBox_4->setGeometry(QRect(10, 10, 281, 111));
         label_21 = new QLabel(groupBox_4);
         label_21->setObjectName(QStringLiteral("label_21"));
         label_21->setGeometry(QRect(10, 20, 47, 13));
@@ -284,6 +321,9 @@ public:
         pushButtonOutput = new QPushButton(groupBox_4);
         pushButtonOutput->setObjectName(QStringLiteral("pushButtonOutput"));
         pushButtonOutput->setGeometry(QRect(220, 50, 51, 23));
+        checkBoxUseLayers = new QCheckBox(groupBox_4);
+        checkBoxUseLayers->setObjectName(QStringLiteral("checkBoxUseLayers"));
+        checkBoxUseLayers->setGeometry(QRect(10, 80, 70, 17));
 
         retranslateUi(TestBatchFiles);
 
@@ -308,6 +348,11 @@ public:
         checkBoxRA->setText(QApplication::translate("TestBatchFiles", "Use RA", Q_NULLPTR));
         label_27->setText(QApplication::translate("TestBatchFiles", "[deg]", Q_NULLPTR));
         label_28->setText(QApplication::translate("TestBatchFiles", "Angle threshold:", Q_NULLPTR));
+        label_29->setText(QApplication::translate("TestBatchFiles", "Weight:", Q_NULLPTR));
+        label_30->setText(QApplication::translate("TestBatchFiles", "Weight:", Q_NULLPTR));
+        label_31->setText(QApplication::translate("TestBatchFiles", "Weight:", Q_NULLPTR));
+        label_32->setText(QApplication::translate("TestBatchFiles", "Weight:", Q_NULLPTR));
+        checkBoxAccuracy->setText(QApplication::translate("TestBatchFiles", "Use accuracy", Q_NULLPTR));
         groupBox->setTitle(QApplication::translate("TestBatchFiles", "Curve", Q_NULLPTR));
         label->setText(QApplication::translate("TestBatchFiles", "Min points:", Q_NULLPTR));
         label_5->setText(QApplication::translate("TestBatchFiles", "Min radius:", Q_NULLPTR));
@@ -334,6 +379,7 @@ public:
         label_22->setText(QApplication::translate("TestBatchFiles", "Output", Q_NULLPTR));
         pushButtonInput->setText(QApplication::translate("TestBatchFiles", "...", Q_NULLPTR));
         pushButtonOutput->setText(QApplication::translate("TestBatchFiles", "...", Q_NULLPTR));
+        checkBoxUseLayers->setText(QApplication::translate("TestBatchFiles", "Use layers", Q_NULLPTR));
     } // retranslateUi
 
 };
