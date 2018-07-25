@@ -26,7 +26,7 @@ class ShapeFit {
 		float accuracyWeight;
 
 	public:
-		BFGSSolver(const std::vector<cv::Point2f>& target_polygon, const std::vector<cv::Point2f>& init_polygon, bool bUseRaOpt, float angle_threshold_RA, float raWeight, bool bUseParallelOpt, float angle_threshold_parallel, float parallelWeight, bool bValidSymmetryLine, const std::vector<cv::Point2f>& symmetry_line, float symmetryWeight, bool bUseAccuracyOpt, float accuracyWeight) {
+		BFGSSolver(const std::vector<cv::Point2f>& target_polygon, const std::vector<cv::Point2f>& init_polygon, bool bUseRaOpt, float angle_threshold_RA, float raWeight, bool bUseParallelOpt, float angle_threshold_parallel, float parallelWeight, bool bUseSymmetryLineOpt, const std::vector<cv::Point2f>& symmetry_line, float symmetryWeight, bool bUseAccuracyOpt, float accuracyWeight) {
 			this->target_polygon = target_polygon;
 			this->init_polygon = init_polygon;
 			this->bUseRaOpt = bUseRaOpt;
@@ -38,7 +38,7 @@ class ShapeFit {
 			this->bUseSymmetryLineOpt = bUseSymmetryLineOpt;
 			this->symmetry_line = symmetry_line;
 			this->symmetryWeight = symmetryWeight;
-			this->bUseAccuracy = bUseAccuracy;
+			this->bUseAccuracy = bUseAccuracyOpt;
 			this->accuracyWeight = accuracyWeight;
 			
 		}
@@ -53,13 +53,13 @@ class ShapeFit {
 				float score = 0.0f;
 				// RA opt function
 				if (bUseRaOpt){
-					std::cout << "use RA opt" << std::endl;
+					std::cout << "use RA opt " << angle_threshold_RA << ", "<< raWeight<< std::endl;
 					score += util::calculateScore(polygon, init_polygon, angle_threshold_RA) * raWeight;
 					//return 0.5 * util::calculateScore(polygon, init_polygon, angle_threshold_RA) + 0.5 * util::calculateIOU(polygon, target_polygon);
 				}
 				// parallel opt function
 				if (bUseParallelOpt){
-					std::cout << "use Parallel opt" << std::endl;
+					std::cout << "use Parallel opt " <<angle_threshold_parallel <<", "<<parallelWeight << std::endl;
 					score += util::calculateAllScore(polygon, init_polygon, angle_threshold_parallel) * parallelWeight;
 				}
 				// symmetry opt function
@@ -85,6 +85,7 @@ class ShapeFit {
 				}
 				// accuracy function
 				if(bUseAccuracy){
+					std::cout << "use accuracy opt " << accuracyWeight<<std::endl;
 					if (!util::isSimple(polygon) || !util::isSimple(target_polygon)){
 						std::cout << "image method" << std::endl;
 						score += util::calculateIOUbyImage(polygon, target_polygon, 1000) * accuracyWeight;

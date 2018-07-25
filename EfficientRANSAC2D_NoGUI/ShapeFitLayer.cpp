@@ -8,6 +8,12 @@ ShapeFitLayer::~ShapeFitLayer() {
 
 std::vector<std::vector<cv::Point2f>> ShapeFitLayer::fit(const std::vector<std::vector<cv::Point2f>>& polygons, const std::vector<std::vector<cv::Point2f>>& ini_points, bool bUseRaOpt, float angle_threshold_RA, float raWeight, bool bUseParallelOpt, float angle_threshold_parallel, float parallelWeight, bool bUseSymmetryLineOpt, const std::vector<std::vector<cv::Point2f>>& symmetry_lines, float symmetryWeight, bool bUseAccuracyOpt, float accuracyWeight) 
 {
+	//{
+	//	std::cout << "bUseRa " << bUseRaOpt << " ra angle is " << angle_threshold_RA << " ra weight is " << raWeight << std::endl;
+	//	std::cout << "bUseParallel " << bUseParallelOpt << " Parallel angle is " << angle_threshold_parallel << " Parallel weight is " << parallelWeight << std::endl;
+	//	std::cout << "bUseSymmetry " << bUseSymmetryLineOpt << " Symmetry weight is " << symmetryWeight << std::endl;
+	//	std::cout << "bUseAccuracy " << bUseAccuracyOpt << " Accuracy weight is " << accuracyWeight << std::endl;
+	//}
 	float min_x = std::numeric_limits<float>::max();
 	float min_y = std::numeric_limits<float>::max();
 	float max_x = -std::numeric_limits<float>::max();
@@ -76,9 +82,11 @@ std::vector<std::vector<cv::Point2f>> ShapeFitLayer::fit(const std::vector<std::
 	if (bUseRaOpt || bUseParallelOpt){
 		bool bValid = false;
 		for (int i = 0; i < ini_points.size(); i++){
-			if (validRAorParallel(ini_points[i], bUseRaOpt, angle_threshold_RA, bUseParallelOpt, angle_threshold_parallel)){
-				bValid = true;
-				break;
+			if (ini_points.size() != 0){
+				if (validRAorParallel(ini_points[i], bUseRaOpt, angle_threshold_RA, bUseParallelOpt, angle_threshold_parallel)){
+					bValid = true;
+					break;
+				}
 			}
 		}
 		if (!bValid){
@@ -87,6 +95,8 @@ std::vector<std::vector<cv::Point2f>> ShapeFitLayer::fit(const std::vector<std::
 	}
 
 	try {
+		std::cout << "total points is " << total_points << std::endl;
+		std::cout << "normalized_polygons_init[0].size() is " << normalized_polygons_init[0].size() << std::endl;
 		column_vector starting_point(total_points * 2);
 		int start_index = 0;
 		for (int i = 0; i < normalized_polygons_init.size(); i++){

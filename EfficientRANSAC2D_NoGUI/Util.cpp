@@ -543,14 +543,14 @@ namespace util {
 			cv::Point2f c = cv::Point2f(polygon[second_start].x, polygon[second_start].y);;
 			cv::Point2f d = cv::Point2f(polygon[second_end].x, polygon[second_end].y);
 			float angle = lineLineAngle(a, b, c, d);
-			std::cout << i <<" angle is " << angle << std::endl;
+			//std::cout << i <<" angle is " << angle << std::endl;
 			if (valid){
 				valid_segments++;
 				score += scoreFun(angle, angle_threshold);
 			}
 		}
-		std::cout << "score of polygon is " << score << std::endl;
-		std::cout << "-----------------" << std::endl;
+		//std::cout << "score of polygon is " << score << std::endl;
+		//std::cout << "-----------------" << std::endl;
 		return score / valid_segments;
 	}
 
@@ -585,7 +585,7 @@ namespace util {
 				cv::Point2f c = cv::Point2f(polygon[second_start].x, polygon[second_start].y);;
 				cv::Point2f d = cv::Point2f(polygon[second_end].x, polygon[second_end].y);
 				float angle = lineLineAngle(a, b, c, d);
-				std::cout << angle_index++ << " angle is " << angle << std::endl;
+				//std::cout << angle_index++ << " angle is " << angle << std::endl;
 				if (valid){
 					valid_segments++;
 					score += scoreFun(angle, angle_threshold);
@@ -593,7 +593,7 @@ namespace util {
 			}
 		}
 		//std::cout << "score of polygon is " << score << std::endl;
-		std::cout << "-----------------" << std::endl;
+		//std::cout << "-----------------" << std::endl;
 		return score / valid_segments;
 	}
 	

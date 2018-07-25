@@ -18,10 +18,6 @@ Canvas::Canvas(QWidget *parent) : QWidget(parent) {
 
 void Canvas::loadImage(const QString& filename) {
 	orig_image = QImage(filename).convertToFormat(QImage::Format_Grayscale8);
-	std::cout << "width() is " << width() << std::endl;
-	std::cout << "height() is " << height() << std::endl;
-	std::cout << "orig_image.width() is " << orig_image.width() << std::endl;
-	std::cout << "orig_image.height() is " << orig_image.height() << std::endl;
 
 	image_scale = std::min((float)width() / orig_image.width(), (float)height() / orig_image.height());
 	image = orig_image.scaled(orig_image.width() * image_scale, orig_image.height() * image_scale);
@@ -228,12 +224,16 @@ void Canvas::detectCurvesLinesWithRA(int curve_num_iterations, int curve_min_poi
 void Canvas::generateContours(int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, bool bUseSymmetryLine, float iouThreahold, float symmetryWeight, bool bUseRaOpt, float raThreahold, float raWeight, bool bUseParallelOpt, float papallelThreahold, float parallelWeight, bool bUseAccuracyOpt, float accuracyWeight, bool bUseOneLayer, bool bUserLayers)
 {
 	// optimization for one polygon
-	if (!bUseOneLayer && !bUserLayers)
+	if (!bUseOneLayer && !bUserLayers){
+		std::cout << "OPT for polygon" << std::endl;
 		generateContoursPolygon(curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, contour_max_error, contour_angle_threshold, bUseSymmetryLine, iouThreahold, symmetryWeight, bUseRaOpt, raThreahold, raWeight, bUseParallelOpt, papallelThreahold, parallelWeight, bUseAccuracyOpt, accuracyWeight);
-	// optimization for all polyons in one layer
+	}
+		// optimization for all polyons in one layer
 	if (bUseOneLayer && !bUserLayers)
+	{
+		std::cout << "OPT for one layer" << std::endl;
 		generateContoursLayer(curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, contour_max_error, contour_angle_threshold, bUseSymmetryLine, iouThreahold, symmetryWeight, bUseRaOpt, raThreahold, raWeight, bUseParallelOpt, papallelThreahold, parallelWeight, bUseAccuracyOpt, accuracyWeight);
-
+	}
 }
 
 void Canvas::generateContoursPolygon(int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, bool bUseSymmetryLine, float iouThreahold, float symmetryWeight, bool bUseRaOpt, float raThreahold, float raWeight, bool bUseParallelOpt, float papallelThreahold, float parallelWeight, bool bUseAccuracyOpt, float accuracyWeight){
@@ -304,6 +304,7 @@ void Canvas::generateContoursPolygon(int curve_num_iterations, int curve_min_poi
 		// symmetry line
 		bool bvalid_symmetry_line = false;
 		if (bUseSymmetryLine){
+			std::cout << "iouThreahold is " << iouThreahold << std::endl;
 			symmetry_lines[i] = SymmetryLineDetector::fitSymmetryLine(sparse_contour);
 			std::vector<cv::Point2f> symmetry_polygon;
 			for (int j = 0; j < sparse_contour.size(); j++) {
@@ -425,7 +426,18 @@ void Canvas::generateContoursLayer(int curve_num_iterations, int curve_min_point
 
 	// Here we have all original polygons, all initial points and all symmetry lines
 	// We call optimization below
-	ShapeFitLayer::fit(sparse_contours, contours_pre, bUseRaOpt, raThreahold, raWeight, bUseParallelOpt, papallelThreahold, parallelWeight, bUseSymmetryLineOpt, symmetry_lines, symmetryWeight, bUseAccuracyOpt, accuracyWeight);
+	contours = ShapeFitLayer::fit(sparse_contours, contours_pre, bUseRaOpt, raThreahold, raWeight, bUseParallelOpt, papallelThreahold, parallelWeight, bUseSymmetryLineOpt, symmetry_lines, symmetryWeight, bUseAccuracyOpt, accuracyWeight);
+	for (int i = 0; i < contours.size(); i++){
+		////////// DEBUG //////////
+		// calculate IOU
+		std::cout << "Polygon " << i << std::endl;
+		if (util::isSimple(polygons[i].contour) && util::isSimple(contours[i]))
+			std::cout << "IOU = " << util::calculateIOU(polygons[i].contour, contours[i]) << std::endl;
+		else
+			std::cout << "IOU = " << util::calculateIOUbyImage(polygons[i].contour, contours[i], 1000) << std::endl;
+		std::cout << "#vertices = " << contours[i].size() << std::endl;
+		std::cout << "-----------------------" << std::endl;
+	}
 }
 
 void Canvas::generateContoursWithRA(int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, float ra_max_error, float ra_cluster_epsilon, bool ra_optimization) {

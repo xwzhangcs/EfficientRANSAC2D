@@ -47,13 +47,11 @@ class ShapeFitLayer {
 			polygons.resize(init_polygons.size());
 			int start_index = 0;
 			for (int i = 0; i < init_polygons.size(); i++){
-				
-				for (int j = 0; i < init_polygons[i].size(); j++) {
+				for (int j = 0; j < init_polygons[i].size(); j++) {
 					polygons[i].push_back(cv::Point2f(arg((j + start_index) * 2), arg((j + start_index) * 2 + 1)));
 				}
 				start_index += init_polygons[i].size();
 			}
-
 			try {
 				float score = 0.0f;
 				int valid_polygons = 0;
