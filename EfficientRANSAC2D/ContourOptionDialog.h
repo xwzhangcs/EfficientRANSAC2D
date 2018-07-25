@@ -51,6 +51,7 @@ public:
 	float getAccuracyWeight();
 
 	bool getUseLayers();
+	bool getUseOneLayer();
 
 public slots:
 	void onUseRA();

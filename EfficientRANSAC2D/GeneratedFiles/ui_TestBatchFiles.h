@@ -99,12 +99,13 @@ public:
     QPushButton *pushButtonInput;
     QPushButton *pushButtonOutput;
     QCheckBox *checkBoxUseLayers;
+    QCheckBox *checkBoxUseOneLayer;
 
     void setupUi(QDialog *TestBatchFiles)
     {
         if (TestBatchFiles->objectName().isEmpty())
             TestBatchFiles->setObjectName(QStringLiteral("TestBatchFiles"));
-        TestBatchFiles->resize(319, 898);
+        TestBatchFiles->resize(319, 895);
         pushButtonOK = new QPushButton(TestBatchFiles);
         pushButtonOK->setObjectName(QStringLiteral("pushButtonOK"));
         pushButtonOK->setGeometry(QRect(40, 860, 91, 31));
@@ -323,7 +324,10 @@ public:
         pushButtonOutput->setGeometry(QRect(220, 50, 51, 23));
         checkBoxUseLayers = new QCheckBox(groupBox_4);
         checkBoxUseLayers->setObjectName(QStringLiteral("checkBoxUseLayers"));
-        checkBoxUseLayers->setGeometry(QRect(10, 80, 70, 17));
+        checkBoxUseLayers->setGeometry(QRect(141, 80, 70, 17));
+        checkBoxUseOneLayer = new QCheckBox(groupBox_4);
+        checkBoxUseOneLayer->setObjectName(QStringLiteral("checkBoxUseOneLayer"));
+        checkBoxUseOneLayer->setGeometry(QRect(10, 80, 70, 17));
 
         retranslateUi(TestBatchFiles);
 
@@ -380,6 +384,7 @@ public:
         pushButtonInput->setText(QApplication::translate("TestBatchFiles", "...", Q_NULLPTR));
         pushButtonOutput->setText(QApplication::translate("TestBatchFiles", "...", Q_NULLPTR));
         checkBoxUseLayers->setText(QApplication::translate("TestBatchFiles", "Use layers", Q_NULLPTR));
+        checkBoxUseOneLayer->setText(QApplication::translate("TestBatchFiles", "Use layer", Q_NULLPTR));
     } // retranslateUi
 
 };

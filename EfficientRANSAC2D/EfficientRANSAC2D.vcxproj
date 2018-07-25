@@ -121,6 +121,7 @@
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\PrimitiveShape.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\RightAngleSimplification.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFit.cpp" />
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayer.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\SymmetryLineDetector.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\Util.cpp" />
     <ClCompile Include="Canvas.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\PrimitiveShape.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\RightAngleSimplification.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFit.h" />
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayer.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\SymmetryLineDetector.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\Util.h" />
     <ClInclude Include="Canvas.h" />

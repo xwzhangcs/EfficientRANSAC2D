@@ -15,21 +15,31 @@ class ShapeFit {
 		std::vector<cv::Point2f> init_polygon;
 		bool bUseRaOpt;
 		float angle_threshold_RA;
+		float raWeight;
 		bool bUseParallelOpt;
 		float angle_threshold_parallel;
-		bool bValidSymmetryLine;
+		float parallelWeight;
+		bool bUseSymmetryLineOpt;
 		std::vector<cv::Point2f> symmetry_line;
+		float symmetryWeight;
+		bool bUseAccuracy;
+		float accuracyWeight;
 
 	public:
-		BFGSSolver(const std::vector<cv::Point2f>& target_polygon, const std::vector<cv::Point2f>& init_polygon, bool bUseRaOpt, float angle_threshold_RA, bool bUseParallelOpt, float angle_threshold_parallel, bool bValidSymmetryLine, const std::vector<cv::Point2f>& symmetry_line) {
+		BFGSSolver(const std::vector<cv::Point2f>& target_polygon, const std::vector<cv::Point2f>& init_polygon, bool bUseRaOpt, float angle_threshold_RA, float raWeight, bool bUseParallelOpt, float angle_threshold_parallel, float parallelWeight, bool bValidSymmetryLine, const std::vector<cv::Point2f>& symmetry_line, float symmetryWeight, bool bUseAccuracyOpt, float accuracyWeight) {
 			this->target_polygon = target_polygon;
 			this->init_polygon = init_polygon;
 			this->bUseRaOpt = bUseRaOpt;
 			this->angle_threshold_RA = angle_threshold_RA;
+			this->raWeight = raWeight;
 			this->bUseParallelOpt = bUseParallelOpt;
 			this->angle_threshold_parallel = angle_threshold_parallel;
-			this->bValidSymmetryLine = bValidSymmetryLine;
+			this->parallelWeight = parallelWeight;
+			this->bUseSymmetryLineOpt = bUseSymmetryLineOpt;
 			this->symmetry_line = symmetry_line;
+			this->symmetryWeight = symmetryWeight;
+			this->bUseAccuracy = bUseAccuracy;
+			this->accuracyWeight = accuracyWeight;
 			
 		}
 
@@ -39,21 +49,21 @@ class ShapeFit {
 				polygon.push_back(cv::Point2f(arg(i * 2), arg(i * 2 + 1)));
 			}
 
-			try {			
+			try {		
+				float score = 0.0f;
 				// RA opt function
 				if (bUseRaOpt){
-					std::cout << "use RA opt and threshold is " << angle_threshold_RA << std::endl;
-					return util::calculateScore(polygon, init_polygon, angle_threshold_RA);
+					std::cout << "use RA opt" << std::endl;
+					score += util::calculateScore(polygon, init_polygon, angle_threshold_RA) * raWeight;
 					//return 0.5 * util::calculateScore(polygon, init_polygon, angle_threshold_RA) + 0.5 * util::calculateIOU(polygon, target_polygon);
 				}
 				// parallel opt function
-				else if (bUseParallelOpt){
-					std::cout << "use Parallel opt and threshold is " << angle_threshold_parallel << std::endl;
-					return util::calculateAllScore(polygon, init_polygon, angle_threshold_parallel);
+				if (bUseParallelOpt){
+					std::cout << "use Parallel opt" << std::endl;
+					score += util::calculateAllScore(polygon, init_polygon, angle_threshold_parallel) * parallelWeight;
 				}
-
 				// symmetry opt function
-				else if (bValidSymmetryLine){
+				if (bUseSymmetryLineOpt){
 					std::vector<cv::Point2f> polygon_symmetry;
 					cv::Point2f a = symmetry_line[0];
 					cv::Point2f b = symmetry_line[1];
@@ -70,25 +80,22 @@ class ShapeFit {
 						std::cout << "cgal method" << std::endl;
 					}
 					std::cout << "During OPT, IOU is " << iou << std::endl;
-					return iou;
+					score += iou * symmetryWeight;
 
-					/*float distance = util::calculatePoLIS(polygon, target_polygon);
-					std::cout << "distance is " << distance << std::endl;
-					return distance;*/
 				}
 				// accuracy function
-				else{
+				if(bUseAccuracy){
 					if (!util::isSimple(polygon) || !util::isSimple(target_polygon)){
 						std::cout << "image method" << std::endl;
-						return util::calculateIOUbyImage(polygon, target_polygon, 1000);
+						score += util::calculateIOUbyImage(polygon, target_polygon, 1000) * accuracyWeight;
 					}
 					else{
 						std::cout << "cgal method" << std::endl;
-						return util::calculateIOU(polygon, target_polygon);
+						score += util::calculateIOU(polygon, target_polygon) * accuracyWeight;
 					}
-					//return  util::calculateIOU(polygon, target_polygon);
-					//return util::calculatePoLIS(polygon, target_polygon);
+
 				}
+				return score;
 			}
 			catch (...) {
 				std::cout << "exception" << std::endl;

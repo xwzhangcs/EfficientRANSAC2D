@@ -151,6 +151,9 @@
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\SymmetryLineDetector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="MainWindow.qrc">
@@ -216,6 +219,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\SymmetryLineDetector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

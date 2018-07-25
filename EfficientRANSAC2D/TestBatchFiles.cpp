@@ -43,6 +43,7 @@ TestBatchFiles::TestBatchFiles(QWidget *parent)
 	ui.lineEditAccuracyWeight->setText("0.25");
 
 	ui.checkBoxUseLayers->setChecked(false);
+	ui.checkBoxUseOneLayer->setChecked(false);
 	connect(ui.checkBoxUseRA, SIGNAL(clicked()), this, SLOT(onUseRA()));
 	connect(ui.pushButtonOK, SIGNAL(clicked()), this, SLOT(onOK()));
 	connect(ui.checkBoxSymmetryLine, SIGNAL(clicked()), this, SLOT(onUseSymmetryLineOpt()));
@@ -187,6 +188,10 @@ float TestBatchFiles::getAccuracyWeight(){
 
 bool TestBatchFiles::getUseLayers(){
 	return ui.checkBoxUseLayers->isChecked();
+}
+
+bool TestBatchFiles::getUseOneLayer(){
+	return ui.checkBoxUseOneLayer->isChecked();
 }
 
 void TestBatchFiles::onUseRA() {

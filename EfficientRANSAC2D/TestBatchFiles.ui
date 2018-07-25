@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>319</width>
-    <height>898</height>
+    <height>895</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -873,7 +873,7 @@
    <widget class="QCheckBox" name="checkBoxUseLayers">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>141</x>
       <y>80</y>
       <width>70</width>
       <height>17</height>
@@ -881,6 +881,19 @@
     </property>
     <property name="text">
      <string>Use layers</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxUseOneLayer">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>70</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Use layer</string>
     </property>
    </widget>
   </widget>

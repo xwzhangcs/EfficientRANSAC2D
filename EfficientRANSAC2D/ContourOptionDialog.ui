@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>301</width>
-    <height>808</height>
+    <height>801</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>770</y>
+     <y>764</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -30,7 +30,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
+     <y>34</y>
      <width>281</width>
      <height>171</height>
     </rect>
@@ -217,7 +217,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>770</y>
+     <y>764</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -230,7 +230,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>220</y>
+     <y>214</y>
      <width>281</width>
      <height>241</height>
     </rect>
@@ -466,7 +466,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>470</y>
+     <y>464</y>
      <width>281</width>
      <height>291</height>
     </rect>
@@ -789,14 +789,27 @@
   <widget class="QCheckBox" name="checkBoxUseLayers">
    <property name="geometry">
     <rect>
+     <x>110</x>
+     <y>10</y>
+     <width>101</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Use muti layers</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxUseOneLayer">
+   <property name="geometry">
+    <rect>
      <x>10</x>
-     <y>20</y>
+     <y>10</y>
      <width>70</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
-    <string>Use layers</string>
+    <string>Use layer</string>
    </property>
   </widget>
  </widget>

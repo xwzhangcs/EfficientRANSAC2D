@@ -48,6 +48,7 @@ public:
 	float getAccuracyWeight();
 
 	bool getUseLayers();
+	bool getUseOneLayer();
 
 public:
 	Ui::TestBatchFiles ui;

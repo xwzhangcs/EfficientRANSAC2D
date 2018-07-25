@@ -6,7 +6,7 @@ ShapeFit::ShapeFit() {
 ShapeFit::~ShapeFit() {
 }
 
-std::vector<cv::Point2f> ShapeFit::fit(const std::vector<cv::Point2f>& polygon, const std::vector<cv::Point2f>& ini_points, bool bUseRaOpt, float angle_threshold_RA, float raWeight, bool bUseParallelOpt, float angle_threshold_parallel, float parallelWeight, bool bValidSymmetryLine, const std::vector<cv::Point2f>& symmetry_line, float symmetryWeight, bool bUseAccuracyOpt, float accuracyWeight) {
+std::vector<cv::Point2f> ShapeFit::fit(const std::vector<cv::Point2f>& polygon, const std::vector<cv::Point2f>& ini_points, bool bUseRaOpt, float angle_threshold_RA, float raWeight, bool bUseParallelOpt, float angle_threshold_parallel, float parallelWeight, bool bUseSymmetryLineOpt, const std::vector<cv::Point2f>& symmetry_line, float symmetryWeight, bool bUseAccuracyOpt, float accuracyWeight) {
 	float min_x = std::numeric_limits<float>::max();
 	float min_y = std::numeric_limits<float>::max();
 	float max_x = -std::numeric_limits<float>::max();
@@ -25,7 +25,7 @@ std::vector<cv::Point2f> ShapeFit::fit(const std::vector<cv::Point2f>& polygon, 
 		max_x = std::max(max_x, ini_points[i].x);
 		max_y = std::max(max_y, ini_points[i].y);
 	}
-	if (bValidSymmetryLine)
+	if (bUseSymmetryLineOpt)
 		for (int i = 0; i < symmetry_line.size(); i++){
 			min_x = std::min(min_x, symmetry_line[i].x);
 			min_y = std::min(min_y, symmetry_line[i].y);
@@ -42,7 +42,7 @@ std::vector<cv::Point2f> ShapeFit::fit(const std::vector<cv::Point2f>& polygon, 
 	// normalized_symmetry_line
 	std::vector<cv::Point2f> normalized_symmetry_line;
 
-	if (bValidSymmetryLine){
+	if (bUseSymmetryLineOpt){
 		normalized_symmetry_line.resize(symmetry_line.size());
 		for (int i = 0; i < symmetry_line.size(); i++) {
 			normalized_symmetry_line[i] = cv::Point2f((symmetry_line[i].x - min_x) / max_unit, (symmetry_line[i].y - min_y) / max_unit);
@@ -57,8 +57,10 @@ std::vector<cv::Point2f> ShapeFit::fit(const std::vector<cv::Point2f>& polygon, 
 	// we need to check whether there are valid angles
 	if (bUseRaOpt || bUseParallelOpt){
 		if (!validRAorParallel(ini_points, bUseRaOpt, angle_threshold_RA, bUseParallelOpt, angle_threshold_parallel)){
-			std::cout << "No need to do optimizaiton" << std::endl;
-			return ini_points;
+			if (!bUseAccuracyOpt && !bUseSymmetryLineOpt){
+				std::cout << "No need to do optimizaiton" << std::endl;
+				return ini_points;
+			}
 		}
 	}
 
@@ -69,7 +71,7 @@ std::vector<cv::Point2f> ShapeFit::fit(const std::vector<cv::Point2f>& polygon, 
 			starting_point(i * 2 + 1) = normalized_polygon_init[i].y;
 		}
 
-		BFGSSolver solver(normalized_polygon, normalized_polygon_init, bUseRaOpt, angle_threshold_RA, bUseParallelOpt, angle_threshold_parallel, bValidSymmetryLine, normalized_symmetry_line);
+		BFGSSolver solver(normalized_polygon, normalized_polygon_init, bUseRaOpt, angle_threshold_RA,raWeight, bUseParallelOpt, angle_threshold_parallel,parallelWeight, bUseSymmetryLineOpt, normalized_symmetry_line, symmetryWeight, bUseAccuracyOpt, accuracyWeight);
 		if (true)
 			find_max_using_approximate_derivatives(dlib::bfgs_search_strategy(), dlib::objective_delta_stop_strategy(1e-7),	solver, starting_point, 1, 0.0001);
 		else

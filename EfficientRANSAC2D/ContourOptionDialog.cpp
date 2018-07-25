@@ -40,6 +40,7 @@ ContourOptionDialog::ContourOptionDialog(QWidget *parent) : QDialog(parent) {
 	ui.lineEditAccuracyWeight->setText("0.25");
 
 	ui.checkBoxUseLayers->setChecked(false);
+	ui.checkBoxUseOneLayer->setChecked(false);
 	connect(ui.checkBoxUseRA, SIGNAL(clicked()), this, SLOT(onUseRA()));
 	connect(ui.checkBoxSymmetryLine, SIGNAL(clicked()), this, SLOT(onUseSymmetryLineOpt()));
 	connect(ui.checkBoxRA, SIGNAL(clicked()), this, SLOT(onUseRaOpt()));
@@ -181,6 +182,10 @@ float ContourOptionDialog::getAccuracyWeight(){
 
 bool ContourOptionDialog::getUseLayers(){
 	return ui.checkBoxUseLayers->isChecked();
+}
+
+bool ContourOptionDialog::getUseOneLayer(){
+	return ui.checkBoxUseOneLayer->isChecked();
 }
 
 void ContourOptionDialog::onUseRA() {
