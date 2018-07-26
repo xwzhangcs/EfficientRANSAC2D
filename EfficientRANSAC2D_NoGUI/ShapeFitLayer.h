@@ -62,16 +62,18 @@ class ShapeFitLayer {
 						if (bUseRaOpt){
 							std::cout << "use RA opt" << std::endl;
 							score += util::calculateScore(polygons[i], init_polygons[i], angle_threshold_RA) * raWeight;
+							//std::cout << "score is " << score <<std::endl;
 						}
 						// parallel opt function
 						if (bUseParallelOpt){
-							std::cout << "use Parallel opt"<< std::endl;
+							std::cout << "use Parallel opt" << std::endl;
 							score += util::calculateAllScore(polygons[i], init_polygons[i], angle_threshold_parallel) * parallelWeight;
 						}
 
 						// symmetry opt function
 						if (bUseSymmetryLineOpt){
 							if (symmetry_lines[i].size() != 0){
+								std::cout << "symmetry polygon is " << i << std::endl;
 								std::vector<cv::Point2f> polygon_symmetry;
 								cv::Point2f a = symmetry_lines[i][0];
 								cv::Point2f b = symmetry_lines[i][1];
@@ -105,11 +107,17 @@ class ShapeFitLayer {
 								score += util::calculateIOU(polygons[i], target_polygons[i]) * accuracyWeight;
 							}
 						}
-
-						valid_polygons++;
+						if (bUseSymmetryLineOpt && !bUseRaOpt && !bUseParallelOpt && !bUseAccuracy){
+							if (symmetry_lines[i].size() != 0)
+								valid_polygons++;
+						}
+						else
+							valid_polygons++;
 					}
 				}
 				score = score / valid_polygons;
+				std::cout << "valid_polygons is " << valid_polygons<<std::endl;
+				std::cout << "---------------- " << std::endl;
 				return score;
 			}
 			catch (...) {

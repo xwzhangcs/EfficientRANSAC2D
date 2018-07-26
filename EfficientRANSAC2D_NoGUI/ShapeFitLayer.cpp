@@ -82,7 +82,7 @@ std::vector<std::vector<cv::Point2f>> ShapeFitLayer::fit(const std::vector<std::
 	if (bUseRaOpt || bUseParallelOpt){
 		bool bValid = false;
 		for (int i = 0; i < ini_points.size(); i++){
-			if (ini_points.size() != 0){
+			if (ini_points[i].size() != 0){
 				if (validRAorParallel(ini_points[i], bUseRaOpt, angle_threshold_RA, bUseParallelOpt, angle_threshold_parallel)){
 					bValid = true;
 					break;

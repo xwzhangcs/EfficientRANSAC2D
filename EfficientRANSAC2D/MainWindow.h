@@ -25,4 +25,5 @@ public slots:
 	void onGenerateContours();
 	void onTestBatchFiles();
 	void onTestReflection();
+	void onTestUseLayers();
 };

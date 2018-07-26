@@ -871,6 +871,9 @@
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBoxUseLayers">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>141</x>

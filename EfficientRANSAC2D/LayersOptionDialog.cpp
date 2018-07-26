@@ -1,7 +1,7 @@
-#include "TestBatchFiles.h"
+#include "LayersOptionDialog.h"
 #include <QFileDialog>
 
-TestBatchFiles::TestBatchFiles(QWidget *parent)
+LayersOptionDialog::LayersOptionDialog(QWidget *parent)
 	: QDialog(parent)
 {
 	ui.setupUi(this);
@@ -42,8 +42,6 @@ TestBatchFiles::TestBatchFiles(QWidget *parent)
 	ui.checkBoxAccuracy->setChecked(false);
 	ui.lineEditAccuracyWeight->setText("0.25");
 
-	ui.checkBoxUseLayers->setChecked(false);
-	ui.checkBoxUseOneLayer->setChecked(false);
 	connect(ui.checkBoxUseRA, SIGNAL(clicked()), this, SLOT(onUseRA()));
 	connect(ui.pushButtonOK, SIGNAL(clicked()), this, SLOT(onOK()));
 	connect(ui.checkBoxSymmetryLine, SIGNAL(clicked()), this, SLOT(onUseSymmetryLineOpt()));
@@ -61,181 +59,173 @@ TestBatchFiles::TestBatchFiles(QWidget *parent)
 	onUseAccuracyOpt();
 }
 
-TestBatchFiles::~TestBatchFiles()
+LayersOptionDialog::~LayersOptionDialog()
 {
 }
 
-int TestBatchFiles::getCurveNumIterations() {
+int LayersOptionDialog::getCurveNumIterations() {
 	return ui.lineEditCurveNumIterations->text().toInt();
 }
 
-int TestBatchFiles::getCurveMinPoints() {
+int LayersOptionDialog::getCurveMinPoints() {
 	return ui.lineEditCurveMinPoints->text().toInt();
 }
 
-float TestBatchFiles::getCurveMaxErrorRatioToRadius() {
+float LayersOptionDialog::getCurveMaxErrorRatioToRadius() {
 	return ui.lineEditCurveMaxErrorRatioToRadius->text().toFloat();
 }
 
-float TestBatchFiles::getCurveClusterEpsilon() {
+float LayersOptionDialog::getCurveClusterEpsilon() {
 	return ui.lineEditCurveClusterEpsilon->text().toFloat();
 }
 
-float TestBatchFiles::getCurveMinAngle() {
+float LayersOptionDialog::getCurveMinAngle() {
 	return ui.lineEditCurveMinAngle->text().toFloat();
 }
 
-float TestBatchFiles::getCurveMinRadius() {
+float LayersOptionDialog::getCurveMinRadius() {
 	return ui.lineEditCurveMinRadius->text().toFloat();
 }
 
-float TestBatchFiles::getCurveMaxRadius() {
+float LayersOptionDialog::getCurveMaxRadius() {
 	return ui.lineEditCurveMaxRadius->text().toFloat();
 }
 
-int TestBatchFiles::getLineNumIterations() {
+int LayersOptionDialog::getLineNumIterations() {
 	return ui.lineEditLineNumIterations->text().toInt();
 }
 
-int TestBatchFiles::getLineMinPoints() {
+int LayersOptionDialog::getLineMinPoints() {
 	return ui.lineEditLineMinPoints->text().toInt();
 }
 
-float TestBatchFiles::getLineMaxError() {
+float LayersOptionDialog::getLineMaxError() {
 	return ui.lineEditLineMaxError->text().toFloat();
 }
 
-float TestBatchFiles::getLineClusterEpsilon() {
+float LayersOptionDialog::getLineClusterEpsilon() {
 	return ui.lineEditLineClusterEpsilon->text().toFloat();
 }
 
-float TestBatchFiles::getLineMinLength() {
+float LayersOptionDialog::getLineMinLength() {
 	return ui.lineEditLineMinLength->text().toFloat();
 }
 
-float TestBatchFiles::getLineAngleThreshold() {
+float LayersOptionDialog::getLineAngleThreshold() {
 	return ui.lineEditLineAngleThreshold->text().toFloat();
 }
 
-bool TestBatchFiles::getUseRA() {
+bool LayersOptionDialog::getUseRA() {
 	return ui.checkBoxUseRA->isChecked();
 }
 
-float TestBatchFiles::getRAMaxError() {
+float LayersOptionDialog::getRAMaxError() {
 	return ui.lineEditRAMaxError->text().toFloat();
 }
 
-float TestBatchFiles::getRAClusterEpsilon() {
+float LayersOptionDialog::getRAClusterEpsilon() {
 	return ui.lineEditLineClusterEpsilon->text().toFloat();
 }
 
-bool TestBatchFiles::getRAOptimization() {
+bool LayersOptionDialog::getRAOptimization() {
 	return ui.checkBoxRAOptimization->isChecked();
 }
 
-float TestBatchFiles::getContourMaxError() {
+float LayersOptionDialog::getContourMaxError() {
 	return ui.lineEditContourMaxError->text().toFloat();
 }
 
-float TestBatchFiles::getContourAngleThreshold() {
+float LayersOptionDialog::getContourAngleThreshold() {
 	return ui.lineEditContourAngleThreshold->text().toFloat();
 }
 
-float TestBatchFiles::getIOUThreshold(){
+float LayersOptionDialog::getIOUThreshold(){
 	return ui.lineEditIOUThreshold->text().toFloat();
 }
 
-bool TestBatchFiles::getUseSymmetryLineOpt(){
+bool LayersOptionDialog::getUseSymmetryLineOpt(){
 	return ui.checkBoxSymmetryLine->isChecked();
 }
 
-float TestBatchFiles::getSymmetryWeight(){
+float LayersOptionDialog::getSymmetryWeight(){
 	return ui.lineEditSymmetryWeight->text().toFloat();
 }
 
-bool TestBatchFiles::getUseRaOpt(){
+bool LayersOptionDialog::getUseRaOpt(){
 	return ui.checkBoxRA->isChecked();
 }
 
-float TestBatchFiles::getRaThreshold(){
+float LayersOptionDialog::getRaThreshold(){
 	return ui.lineEditRAthreshold->text().toFloat();
 }
 
-float TestBatchFiles::getRaWeight(){
+float LayersOptionDialog::getRaWeight(){
 	return ui.lineEditRaWeight->text().toFloat();
 }
 
-bool TestBatchFiles::getUseParallelOpt(){
+bool LayersOptionDialog::getUseParallelOpt(){
 	return ui.checkBoxParallel->isChecked();
 }
 
-float TestBatchFiles::getParallelThreshold(){
+float LayersOptionDialog::getParallelThreshold(){
 	return ui.lineEditParallelThreshold->text().toFloat();
 }
 
-float TestBatchFiles::getParallelWeight(){
+float LayersOptionDialog::getParallelWeight(){
 	return ui.lineEditParallelWeight->text().toFloat();
 }
 
-bool TestBatchFiles::getUseAccuracyOpt(){
+bool LayersOptionDialog::getUseAccuracyOpt(){
 	return ui.checkBoxAccuracy->isChecked();
 }
 
-float TestBatchFiles::getAccuracyWeight(){
+float LayersOptionDialog::getAccuracyWeight(){
 	return ui.lineEditAccuracyWeight->text().toFloat();
 }
 
-bool TestBatchFiles::getUseLayers(){
-	return ui.checkBoxUseLayers->isChecked();
-}
-
-bool TestBatchFiles::getUseOneLayer(){
-	return ui.checkBoxUseOneLayer->isChecked();
-}
-
-void TestBatchFiles::onUseRA() {
+void LayersOptionDialog::onUseRA() {
 	ui.lineEditRAMaxError->setEnabled(ui.checkBoxUseRA->isChecked());
 	ui.lineEditRAClusterEpsilon->setEnabled(ui.checkBoxUseRA->isChecked());
 	ui.checkBoxRAOptimization->setEnabled(ui.checkBoxUseRA->isChecked());
 }
 
-void TestBatchFiles::onGetInputPath() {
+void LayersOptionDialog::onGetInputPath() {
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), ui.lineEditInput->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 	if (!dir.isEmpty()) {
 		ui.lineEditInput->setText(dir);
 	}
 }
 
-void TestBatchFiles::onGetOutputPath(){
+void LayersOptionDialog::onGetOutputPath(){
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), ui.lineEditOutput->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 	if (!dir.isEmpty()) {
 		ui.lineEditOutput->setText(dir);
 	}
 }
 
-void TestBatchFiles::onUseSymmetryLineOpt() {
+void LayersOptionDialog::onUseSymmetryLineOpt() {
 	ui.lineEditIOUThreshold->setEnabled(ui.checkBoxSymmetryLine->isChecked());
 	ui.lineEditSymmetryWeight->setEnabled(ui.checkBoxSymmetryLine->isChecked());
 }
 
-void TestBatchFiles::onUseRaOpt(){
+void LayersOptionDialog::onUseRaOpt(){
 	ui.lineEditRAthreshold->setEnabled(ui.checkBoxRA->isChecked());
 	ui.lineEditRaWeight->setEnabled(ui.checkBoxRA->isChecked());
 }
 
-void TestBatchFiles::onUseParallelOpt(){
+void LayersOptionDialog::onUseParallelOpt(){
 	ui.lineEditParallelThreshold->setEnabled(ui.checkBoxParallel->isChecked());
 	ui.lineEditParallelWeight->setEnabled(ui.checkBoxParallel->isChecked());
 }
 
-void TestBatchFiles::onUseAccuracyOpt(){
+void LayersOptionDialog::onUseAccuracyOpt(){
 	ui.lineEditAccuracyWeight->setEnabled(ui.checkBoxAccuracy->isChecked());
 }
 
-void TestBatchFiles::onOK() {
+void LayersOptionDialog::onOK() {
 	accept();
 }
 
-void TestBatchFiles::onCancel() {
+void LayersOptionDialog::onCancel() {
 	reject();
 }

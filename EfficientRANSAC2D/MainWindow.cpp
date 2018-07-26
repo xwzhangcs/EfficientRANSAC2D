@@ -7,6 +7,9 @@
 #include "RightAngleOptionDialog.h"
 #include "TestBatchFiles.h"
 #include "SymmetryLineOptionDialog.h"
+#include "LayersOptionDialog.h"
+#include <QTextStream>
+#include "../EfficientRANSAC2D_NoGUI/Regularizer.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	ui.setupUi(this);
@@ -30,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	connect(ui.actionBatchFiles, SIGNAL(triggered()), this, SLOT(onTestBatchFiles())); 
 	connect(ui.actionReflection, SIGNAL(triggered()), this, SLOT(onTestReflection()));
 	connect(ui.actionDetectSymmetryLine, SIGNAL(triggered()), this, SLOT(onDetectSymmetryLine()));
+	connect(ui.actionLayers, SIGNAL(triggered()), this, SLOT(onTestUseLayers()));
 }
 
 void MainWindow::onOpen() {
@@ -186,6 +190,76 @@ void MainWindow::onTestBatchFiles(){
 
 			}
 		}
+	}
+}
+
+void MainWindow::onTestUseLayers(){
+	LayersOptionDialog dlg;
+	if (dlg.exec()) {
+		//check the sum weight equals 1
+		float weight = 0.0f;
+		if (dlg.getUseSymmetryLineOpt())
+			weight += dlg.getSymmetryWeight();
+		if (dlg.getUseRaOpt())
+			weight += dlg.getRaWeight();
+		if (dlg.getUseParallelOpt())
+			weight += dlg.getParallelWeight();
+		if (dlg.getUseAccuracyOpt())
+			weight += dlg.getAccuracyWeight();
+		if (abs(weight - 1.0f) < 0.0001)
+		{
+			std::cout << "Success!!" << std::endl;
+		}
+		else{
+			std::cout << "Please check weight assignment!!!" << std::endl;
+			return;
+		}
+		// read files one by one
+		QString input_dir = dlg.ui.lineEditInput->text();
+		QString output_dir = dlg.ui.lineEditOutput->text();
+		if (output_dir.isEmpty() || input_dir.isEmpty()){
+			std::cout << "The path is empty!!" << std::endl;
+			return;
+		}
+		QDir dir(input_dir);
+		int index = 0;
+		int num_files = 0;
+		QString file_path;
+		foreach(QFileInfo item, dir.entryInfoList())
+		{
+			if (item.isFile()){
+				num_files++;
+			}
+		}
+
+		// read layer images
+		std::vector<QString> fileNameList;
+		fileNameList.resize(num_files - 1);
+		for (int i = 0; i < num_files - 1; i++){
+			QString filename = input_dir + "/" + QString::number(i) + ".png";
+			fileNameList[i] = filename;
+		}
+		std::vector<std::pair<float, float>> height_info;
+		height_info.resize(num_files - 1);
+		// read height info
+		QFile height_info_file = input_dir + "/info.txt";
+		if (!height_info_file.open(QIODevice::ReadOnly)) {
+			std::cout << "read height info file error" << std::endl;
+			return;
+		}
+		QTextStream in(&height_info_file);
+		for (int i = 0; i < num_files - 1; i++){
+			QString line = in.readLine();
+			QStringList fields = line.split(",");
+			height_info[i] = std::make_pair(fields.at(0).toFloat(), fields.at(1).toFloat());
+		}
+		height_info_file.close();
+		// test layer
+		{
+			Regularizer reg;
+			reg.regularizerForLayers(fileNameList, height_info, dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, dlg.getUseSymmetryLineOpt(), dlg.getIOUThreshold(), dlg.getSymmetryWeight(), dlg.getUseRaOpt(), dlg.getRaThreshold(), dlg.getRaWeight(), dlg.getUseParallelOpt(), dlg.getParallelThreshold(), dlg.getParallelWeight(), dlg.getUseAccuracyOpt(), dlg.getAccuracyWeight());
+		}
+		// test layers
 	}
 }
 

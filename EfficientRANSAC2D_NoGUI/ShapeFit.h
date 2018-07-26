@@ -53,7 +53,7 @@ class ShapeFit {
 				float score = 0.0f;
 				// RA opt function
 				if (bUseRaOpt){
-					std::cout << "use RA opt " << angle_threshold_RA << ", "<< raWeight<< std::endl;
+					//std::cout << "use RA opt " << angle_threshold_RA << ", "<< raWeight<< std::endl;
 					score += util::calculateScore(polygon, init_polygon, angle_threshold_RA) * raWeight;
 					//return 0.5 * util::calculateScore(polygon, init_polygon, angle_threshold_RA) + 0.5 * util::calculateIOU(polygon, target_polygon);
 				}

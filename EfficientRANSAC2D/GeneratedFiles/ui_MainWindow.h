@@ -39,6 +39,7 @@ public:
     QAction *actionBatchFiles;
     QAction *actionReflection;
     QAction *actionDetectSymmetryLine;
+    QAction *actionLayers;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
@@ -87,6 +88,8 @@ public:
         actionReflection->setObjectName(QStringLiteral("actionReflection"));
         actionDetectSymmetryLine = new QAction(MainWindowClass);
         actionDetectSymmetryLine->setObjectName(QStringLiteral("actionDetectSymmetryLine"));
+        actionLayers = new QAction(MainWindowClass);
+        actionLayers->setObjectName(QStringLiteral("actionLayers"));
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         MainWindowClass->setCentralWidget(centralWidget);
@@ -124,6 +127,7 @@ public:
         menuTool->addAction(actionGenerateContours);
         menuTest->addAction(actionBatchFiles);
         menuTest->addAction(actionReflection);
+        menuTest->addAction(actionLayers);
 
         retranslateUi(MainWindowClass);
 
@@ -147,6 +151,7 @@ public:
         actionBatchFiles->setText(QApplication::translate("MainWindowClass", "Batch Files", Q_NULLPTR));
         actionReflection->setText(QApplication::translate("MainWindowClass", "Reflection", Q_NULLPTR));
         actionDetectSymmetryLine->setText(QApplication::translate("MainWindowClass", "Detect Symmetry Line", Q_NULLPTR));
+        actionLayers->setText(QApplication::translate("MainWindowClass", "Use Layers", Q_NULLPTR));
         menuFile->setTitle(QApplication::translate("MainWindowClass", "File", Q_NULLPTR));
         menuTool->setTitle(QApplication::translate("MainWindowClass", "Tool", Q_NULLPTR));
         menuTest->setTitle(QApplication::translate("MainWindowClass", "Test", Q_NULLPTR));

@@ -51,6 +51,7 @@
     </property>
     <addaction name="actionBatchFiles"/>
     <addaction name="actionReflection"/>
+    <addaction name="actionLayers"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTool"/>
@@ -143,6 +144,11 @@
   <action name="actionDetectSymmetryLine">
    <property name="text">
     <string>Detect Symmetry Line</string>
+   </property>
+  </action>
+  <action name="actionLayers">
+   <property name="text">
+    <string>Use Layers</string>
    </property>
   </action>
  </widget>

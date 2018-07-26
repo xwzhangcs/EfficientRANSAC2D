@@ -116,12 +116,15 @@
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\CurveDetector.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\EfficientRANSAC.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\EfficientRANSACUtil.cpp" />
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\Layer.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\LineDetector.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\OrientationEstimator.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\PrimitiveShape.cpp" />
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\Regularizer.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\RightAngleSimplification.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFit.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayer.cpp" />
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayers.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\SymmetryLineDetector.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\Util.cpp" />
     <ClCompile Include="Canvas.cpp" />
@@ -134,6 +137,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_CurveOptionDialog.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_LayersOptionDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_LineOptionDialog.cpp">
@@ -160,6 +166,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_CurveOptionDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_LayersOptionDialog.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_LineOptionDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -175,6 +184,7 @@
     <ClCompile Include="GeneratedFiles\Release\moc_TestBatchFiles.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="LayersOptionDialog.cpp" />
     <ClCompile Include="LineOptionDialog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="CurveOptionDialog.cpp" />
@@ -191,23 +201,37 @@
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\CurveDetector.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\EfficientRANSAC.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\EfficientRANSACUtil.h" />
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\Layer.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\LineDetector.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\OrientationEstimator.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\PrimitiveShape.h" />
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\Regularizer.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\RightAngleSimplification.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFit.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayer.h" />
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayers.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\SymmetryLineDetector.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\Util.h" />
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="GeneratedFiles\ui_ContourOptionDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_CurveLineOptionDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_CurveOptionDialog.h" />
+    <ClInclude Include="GeneratedFiles\ui_LayersOptionDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_LineOptionDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h" />
     <ClInclude Include="GeneratedFiles\ui_RightAngleOptionDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_SymmetryLineOptionDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_TestBatchFiles.h" />
+    <CustomBuild Include="LayersOptionDialog.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing LayersOptionDialog.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -D_CRT_SECURE_NO_WARNINGS "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtWidgets" "-I.\..\opencv3.4\include" "-IC:\CGAL-4.11.1\include" "-IC:\CGAL-4.11.1\auxiliary\gmp\include" "-I$(BOOST_INCLUDEDIR)\." "-IC:\dlib-19.1"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing LayersOptionDialog.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -D_CRT_SECURE_NO_WARNINGS "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtWidgets" "-I.\..\opencv3.4\include" "-IC:\CGAL-4.11.1\include" "-IC:\CGAL-4.11.1\auxiliary\gmp\include" "-I$(BOOST_INCLUDEDIR)\." "-IC:\dlib-19.1"</Command>
+    </CustomBuild>
     <CustomBuild Include="SymmetryLineOptionDialog.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing SymmetryLineOptionDialog.h...</Message>
@@ -395,6 +419,18 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SymmetryLineOptionDialog.ui">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="LayersOptionDialog.ui">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic%27ing %(Identity)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>

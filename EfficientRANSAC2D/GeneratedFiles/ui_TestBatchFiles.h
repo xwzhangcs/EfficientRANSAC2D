@@ -324,6 +324,7 @@ public:
         pushButtonOutput->setGeometry(QRect(220, 50, 51, 23));
         checkBoxUseLayers = new QCheckBox(groupBox_4);
         checkBoxUseLayers->setObjectName(QStringLiteral("checkBoxUseLayers"));
+        checkBoxUseLayers->setEnabled(false);
         checkBoxUseLayers->setGeometry(QRect(141, 80, 70, 17));
         checkBoxUseOneLayer = new QCheckBox(groupBox_4);
         checkBoxUseOneLayer->setObjectName(QStringLiteral("checkBoxUseOneLayer"));

@@ -326,6 +326,7 @@ void Canvas::generateContoursPolygon(int curve_num_iterations, int curve_min_poi
 		contours[i] = ShapeFit::fit(sparse_contour, contours_pre[i], bUseRaOpt, raThreahold, raWeight, bUseParallelOpt, papallelThreahold, parallelWeight, bvalid_symmetry_line, symmetry_lines[i], symmetryWeight, bUseAccuracyOpt, accuracyWeight);
 		////////// DEBUG //////////
 		// calculate IOU
+		std::cout << "Polygon " << i << std::endl;
 		if (util::isSimple(polygons[i].contour) && util::isSimple(contours[i]))
 			std::cout << "IOU = " << util::calculateIOU(polygons[i].contour, contours[i]) << std::endl;
 		else
@@ -404,39 +405,54 @@ void Canvas::generateContoursLayer(int curve_num_iterations, int curve_min_point
 		// symmetry line
 		bool bvalid_symmetry_line = false;
 		if (bUseSymmetryLineOpt){
-			symmetry_lines[i] = SymmetryLineDetector::fitSymmetryLine(sparse_contours[i]);
+
+			std::vector<cv::Point2f> computed_symmetry_line = SymmetryLineDetector::fitSymmetryLine(sparse_contours[i]);
 			std::vector<cv::Point2f> symmetry_polygon;
 			for (int j = 0; j < sparse_contours[i].size(); j++) {
-				symmetry_polygon.push_back(util::mirrorPoint(symmetry_lines[i][0], symmetry_lines[i][1], sparse_contours[i][j]));
+				symmetry_polygon.push_back(util::mirrorPoint(computed_symmetry_line[0], computed_symmetry_line[1], sparse_contours[i][j]));
 			}
 
 			// calculate IOU between mirror polygon and original polygon
 			float similarity_iou = util::calculateIOU(sparse_contours[i], symmetry_polygon);
 			if (similarity_iou >= iouThreahold * 0.01){
 				std::cout << i << " is here" << std::endl;
+				symmetry_lines[i] = computed_symmetry_line;
 				bvalid_symmetry_line = true;
 				symmetry_lines_signal[i] = true;
 			}
 			else{
+				symmetry_lines[i].clear();
 				bvalid_symmetry_line = false;
 				symmetry_lines_signal[i] = false;
 			}
 		}
 	}
-
+	// if all contours sizes are 0
+	bool bValidLayer = false;
+	for (int i = 0; i < contours_pre.size(); i++){
+		if (contours_pre[i].size() != 0){
+			bValidLayer = true;
+			break;
+		}
+	}
+	if (!bValidLayer)
+		return;
 	// Here we have all original polygons, all initial points and all symmetry lines
 	// We call optimization below
 	contours = ShapeFitLayer::fit(sparse_contours, contours_pre, bUseRaOpt, raThreahold, raWeight, bUseParallelOpt, papallelThreahold, parallelWeight, bUseSymmetryLineOpt, symmetry_lines, symmetryWeight, bUseAccuracyOpt, accuracyWeight);
 	for (int i = 0; i < contours.size(); i++){
 		////////// DEBUG //////////
 		// calculate IOU
-		std::cout << "Polygon " << i << std::endl;
-		if (util::isSimple(polygons[i].contour) && util::isSimple(contours[i]))
-			std::cout << "IOU = " << util::calculateIOU(polygons[i].contour, contours[i]) << std::endl;
-		else
-			std::cout << "IOU = " << util::calculateIOUbyImage(polygons[i].contour, contours[i], 1000) << std::endl;
-		std::cout << "#vertices = " << contours[i].size() << std::endl;
-		std::cout << "-----------------------" << std::endl;
+		if (contours[i].size() != 0){
+			std::cout << "Polygon " << i << std::endl;
+			std::cout << "contour size is " << contours[i].size() << std::endl;
+			if (util::isSimple(polygons[i].contour) && util::isSimple(contours[i]))
+				std::cout << "IOU = " << util::calculateIOU(polygons[i].contour, contours[i]) << std::endl;
+			else
+				std::cout << "IOU = " << util::calculateIOUbyImage(polygons[i].contour, contours[i], 1000) << std::endl;
+			std::cout << "#vertices = " << contours[i].size() << std::endl;
+			std::cout << "-----------------------" << std::endl;
+		}
 	}
 }
 
