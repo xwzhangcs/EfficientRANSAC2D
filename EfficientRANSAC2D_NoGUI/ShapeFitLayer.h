@@ -60,7 +60,7 @@ class ShapeFitLayer {
 						// optimization score for one polygon
 						// RA opt function
 						if (bUseRaOpt){
-							std::cout << "use RA opt" << std::endl;
+							//std::cout << "use RA opt" << std::endl;
 							score += util::calculateScore(polygons[i], init_polygons[i], angle_threshold_RA) * raWeight;
 							//std::cout << "score is " << score <<std::endl;
 						}
@@ -116,8 +116,8 @@ class ShapeFitLayer {
 					}
 				}
 				score = score / valid_polygons;
-				std::cout << "valid_polygons is " << valid_polygons<<std::endl;
-				std::cout << "---------------- " << std::endl;
+				//std::cout << "valid_polygons is " << valid_polygons<<std::endl;
+				//std::cout << "---------------- " << std::endl;
 				return score;
 			}
 			catch (...) {

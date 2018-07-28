@@ -234,30 +234,69 @@ void MainWindow::onTestUseLayers(){
 
 		// read layer images
 		std::vector<QString> fileNameList;
-		fileNameList.resize(num_files - 1);
-		for (int i = 0; i < num_files - 1; i++){
+		fileNameList.resize(num_files - 2);
+		for (int i = 0; i < num_files - 2; i++){
 			QString filename = input_dir + "/" + QString::number(i) + ".png";
 			fileNameList[i] = filename;
 		}
 		std::vector<std::pair<float, float>> height_info;
-		height_info.resize(num_files - 1);
+		height_info.resize(num_files - 2);
 		// read height info
-		QFile height_info_file = input_dir + "/info.txt";
+		QFile height_info_file = input_dir + "/info_height.txt";
 		if (!height_info_file.open(QIODevice::ReadOnly)) {
 			std::cout << "read height info file error" << std::endl;
 			return;
 		}
 		QTextStream in(&height_info_file);
-		for (int i = 0; i < num_files - 1; i++){
+		for (int i = 0; i < num_files - 2; i++){
 			QString line = in.readLine();
 			QStringList fields = line.split(",");
 			height_info[i] = std::make_pair(fields.at(0).toFloat(), fields.at(1).toFloat());
 		}
 		height_info_file.close();
+		// read tree info
+		std::vector<std::pair<int, int>> tree_info_tmp;
+		QFile tree_info_file = input_dir + "/info_tree.txt";
+		if (!tree_info_file.open(QIODevice::ReadOnly)) {
+			std::cout << "read tree info file error" << std::endl;
+			return;
+		}
+		QTextStream in_tree_info(&tree_info_file);
+		while (!in_tree_info.atEnd()){
+			QString line = in_tree_info.readLine();
+			QStringList fields = line.split(",");
+			std::cout << "mother is " << fields.at(0).toInt() << ", child is " << fields.at(1).toInt() << std::endl;
+			tree_info_tmp.push_back(std::make_pair(fields.at(0).toInt(), fields.at(1).toInt()));
+		}
+		tree_info_file.close();
+		std::vector<std::pair<std::vector<int>, std::vector<int>>> tree_info;
+		tree_info.resize(num_files - 2);
+		for (int node = 0; node < num_files - 2; node++){
+			for (int i = 0; i < tree_info_tmp.size(); i++){
+				if (tree_info_tmp[i].first == node){
+					tree_info[node].second.push_back(tree_info_tmp[i].second);
+				}
+				if (tree_info_tmp[i].second == node){
+					tree_info[node].first.push_back(tree_info_tmp[i].first);
+				}
+			}
+		}
+		for (int node = 0; node < num_files - 2; node++){
+			std::cout << "node " << node << "'s mother nodes are as follows:" << std::endl;
+			for (int j = 0; j < tree_info[node].first.size(); j++){
+				std::cout << tree_info[node].first[j] << ",";
+			}
+			std::cout << std::endl;
+			std::cout << "node " << node << "'s children nodes are as follows:" << std::endl;
+			for (int j = 0; j < tree_info[node].second.size(); j++){
+				std::cout << tree_info[node].second[j] << ",";
+			}
+			std::cout << std::endl;
+		}
 		// test layer
 		{
-			Regularizer reg;
-			reg.regularizerForLayers(fileNameList, height_info, dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, dlg.getUseSymmetryLineOpt(), dlg.getIOUThreshold(), dlg.getSymmetryWeight(), dlg.getUseRaOpt(), dlg.getRaThreshold(), dlg.getRaWeight(), dlg.getUseParallelOpt(), dlg.getParallelThreshold(), dlg.getParallelWeight(), dlg.getUseAccuracyOpt(), dlg.getAccuracyWeight());
+			//Regularizer reg;
+			//reg.regularizerForLayers(fileNameList, height_info, dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, dlg.getUseSymmetryLineOpt(), dlg.getIOUThreshold(), dlg.getSymmetryWeight(), dlg.getUseRaOpt(), dlg.getRaThreshold(), dlg.getRaWeight(), dlg.getUseParallelOpt(), dlg.getParallelThreshold(), dlg.getParallelWeight(), dlg.getUseAccuracyOpt(), dlg.getAccuracyWeight());
 		}
 		// test layers
 	}

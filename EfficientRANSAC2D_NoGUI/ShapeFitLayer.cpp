@@ -153,7 +153,7 @@ bool ShapeFitLayer::validRAorParallel(const std::vector<cv::Point2f>& polygon, b
 			cv::Point2f c_init = cv::Point2f(polygon[second_start].x, polygon[second_start].y);;
 			cv::Point2f d_init = cv::Point2f(polygon[second_end].x, polygon[second_end].y);
 			float angle_init = util::lineLineAngle(a_init, b_init, c_init, d_init);
-			std::cout << i << " angle is " << angle_init << std::endl;
+			//std::cout << i << " angle is " << angle_init << std::endl;
 			// check
 			if (abs(angle_init - 45) <= ra_angle_threshold || abs(angle_init - 90) <= ra_angle_threshold || abs(angle_init - 135) <= ra_angle_threshold){
 				return true;
@@ -175,7 +175,7 @@ bool ShapeFitLayer::validRAorParallel(const std::vector<cv::Point2f>& polygon, b
 				cv::Point2f c_init = cv::Point2f(polygon[second_start].x, polygon[second_start].y);;
 				cv::Point2f d_init = cv::Point2f(polygon[second_end].x, polygon[second_end].y);
 				float angle_init = util::lineLineAngle(a_init, b_init, c_init, d_init);
-				std::cout << i <<" to "<<j <<" angle is " << angle_init << std::endl;
+				//std::cout << i <<" to "<<j <<" angle is " << angle_init << std::endl;
 				// check
 				if (abs(angle_init) <= parallel_angle_threshold || abs(angle_init - 180) <= parallel_angle_threshold)
 					return true;

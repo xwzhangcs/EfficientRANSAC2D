@@ -68,7 +68,7 @@ class ShapeFitLayers {
 							// optimization score for one polygon
 							// RA opt function
 							if (bUseRaOpt){
-								std::cout << "use RA opt" << std::endl;
+								//std::cout << "use RA opt" << std::endl;
 								score += util::calculateScore(polygons[k][i], init_layers_polygons[k][i], angle_threshold_RA) * raWeight;
 								//std::cout << "score is " << score <<std::endl;
 							}
@@ -85,7 +85,7 @@ class ShapeFitLayers {
 									std::vector<cv::Point2f> polygon_symmetry;
 									cv::Point2f a = layers_symmetry_lines[k][i][0];
 									cv::Point2f b = layers_symmetry_lines[k][i][1];
-									for (int j = 0; j < polygons[i].size(); j++) {
+									for (int j = 0; j < polygons[k][i].size(); j++) {
 										polygon_symmetry.push_back(util::mirrorPoint(a, b, polygons[k][i][j]));
 									}
 									float iou = 0.0f;
@@ -125,8 +125,8 @@ class ShapeFitLayers {
 					}
 				}
 				score = score / valid_polygons;
-				std::cout << "valid_polygons is " << valid_polygons<<std::endl;
-				std::cout << "---------------- " << std::endl;
+				//std::cout << "valid_polygons is " << valid_polygons<<std::endl;
+				//std::cout << "---------------- " << std::endl;
 				return score;
 			}
 			catch (...) {
