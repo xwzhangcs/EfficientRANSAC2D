@@ -7,7 +7,7 @@
 #include "Layer.h"
 #include "Config.h"
 
-class ShapeFitLayers {
+class ShapeFitLayersInter {
 		
 	typedef dlib::matrix<double, 0, 1> column_vector;
 	typedef std::vector<std::vector<cv::Point2f>> layer_polygons;
@@ -50,61 +50,49 @@ class ShapeFitLayers {
 					for (int i = 0; i < init_layers_polygons[k].size(); i++){
 						if (init_layers_polygons[k][i].size() != 0){
 							// optimization score for one polygon
-							// RA opt function
-							if (config.bUseRaOpt){
-								//std::cout << "use RA opt" << std::endl;
-								score += util::calculateScore(polygons[k][i], init_layers_polygons[k][i], config.angle_threshold_RA) * config.raWeight;
-								//std::cout << "score is " << score <<std::endl;
-							}
-							// parallel opt function
-							if (config.bUseParallelOpt){
-								std::cout << "use Parallel opt" << std::endl;
-								score += util::calculateAllScore(polygons[k][i], init_layers_polygons[k][i], config.angle_threshold_parallel) * config.parallelWeight;
-							}
-
-							// symmetry opt function
-							if (config.bUseSymmetryLineOpt){
-								if (layers_symmetry_lines[k][i].size() != 0){
-									std::cout << "symmetry polygon is " << i << std::endl;
-									std::vector<cv::Point2f> polygon_symmetry;
-									cv::Point2f a = layers_symmetry_lines[k][i][0];
-									cv::Point2f b = layers_symmetry_lines[k][i][1];
-									for (int j = 0; j < polygons[k][i].size(); j++) {
-										polygon_symmetry.push_back(util::mirrorPoint(a, b, polygons[k][i][j]));
+							if (config.bUsePointSnapOpt){
+								int valid_num = 0;
+								std::cout << "Point Snap" << std::endl;
+								for (int j = 0; j < tree_info[k].second.size(); j++){
+									float score_tmp = util::calculateScorePointOpt(polygons[k][i], init_layers_polygons[k][i], polygons[tree_info[k].second[j]], init_layers_polygons[tree_info[k].second[j]], config.pointDisThreshold);
+									if (abs(score_tmp) > 0.1){
+										valid_num++;
+										score += score_tmp;
 									}
-									float iou = 0.0f;
-									if (!util::isSimple(polygons[k][i]) || !util::isSimple(polygon_symmetry)){
-										std::cout << "image method" << std::endl;
-										iou = util::calculateIOUbyImage(polygons[k][i], polygon_symmetry, 1000);
+								}
+								for (int j = 0; j < tree_info[k].first.size(); j++){
+									float score_tmp = util::calculateScorePointOpt(polygons[k][i], init_layers_polygons[k][i], polygons[tree_info[k].first[j]], init_layers_polygons[tree_info[k].first[j]], config.pointDisThreshold);
+									if (abs(score_tmp) > 0.1){
+										valid_num++;
+										score += score_tmp;
 									}
-									else{
-										iou = util::calculateIOU(polygons[k][i], polygon_symmetry);
-										std::cout << "cgal method" << std::endl;
+								}
+								score = score / valid_num;
+								score = score * config.pointWeight;
+							}
+							if (config.bUseSegSnapOpt){
+								int valid_num = 0;
+								std::cout << "Seg Snap" << std::endl;
+								for (int j = 0; j < tree_info[k].second.size(); j++){
+									float score_tmp = util::calculateScoreSegOpt(polygons[k][i], init_layers_polygons[k][i], polygons[tree_info[k].second[j]], init_layers_polygons[tree_info[k].second[j]], config.segDisThreshold, config.segAngleThreshold);
+									if (abs(score_tmp) > 0.1){
+										valid_num++;
+										score += score_tmp;
 									}
-									std::cout << "During OPT, IOU is " << iou << std::endl;
-									score += iou * config.symmetryWeight;
 								}
-								else{
-									// no symmetry line for this polygon
+								for (int j = 0; j < tree_info[k].first.size(); j++){
+									float score_tmp = util::calculateScoreSegOpt(polygons[k][i], init_layers_polygons[k][i], polygons[tree_info[k].first[j]], init_layers_polygons[tree_info[k].first[j]], config.segDisThreshold, config.segAngleThreshold);
+									if (abs(score_tmp) > 0.1){
+										valid_num++;
+										score += score_tmp;
+									}
 								}
+								score = score / valid_num;
+								score = score * config.segWeight;
 							}
-							if (config.bUseAccuracyOpt)
-							{
-								if (!util::isSimple(polygons[k][i]) || !util::isSimple(target_layers_polygons[k][i])){
-									std::cout << "image method" << std::endl;
-									score += util::calculateIOUbyImage(polygons[k][i], target_layers_polygons[k][i], 1000) * config.accuracyWeight;
-								}
-								else{
-									std::cout << "cgal method" << std::endl;
-									score += util::calculateIOU(polygons[k][i], target_layers_polygons[k][i]) * config.accuracyWeight;
-								}
-							}
-							if (config.bUseSymmetryLineOpt && !config.bUseRaOpt && !config.bUseParallelOpt && !config.bUseAccuracyOpt){
-								if (layers_symmetry_lines[k][i].size() != 0)
-									valid_polygons++;
-							}
-							else
+							if (abs(score) > 0.1){
 								valid_polygons++;
+							}
 						}
 					}
 				}
@@ -121,8 +109,8 @@ class ShapeFitLayers {
 	};
 
 protected:
-	ShapeFitLayers();
-	~ShapeFitLayers();
+	ShapeFitLayersInter();
+	~ShapeFitLayersInter();
 
 public:
 	static void fit(std::vector<Layer>& layers, QString config_file);

@@ -10,6 +10,9 @@
 #include "LayersOptionDialog.h"
 #include <QTextStream>
 #include "../EfficientRANSAC2D_NoGUI/Regularizer.h"
+#include "../EfficientRANSAC2D_NoGUI/rapidjson/document.h"
+#include "../EfficientRANSAC2D_NoGUI/rapidjson/writer.h"
+#include "../EfficientRANSAC2D_NoGUI/rapidjson/stringbuffer.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	ui.setupUi(this);
@@ -193,27 +196,70 @@ void MainWindow::onTestBatchFiles(){
 	}
 }
 
+QString readStringValue(const rapidjson::Value& node, const char* key) {
+	if (node.HasMember(key) && node[key].IsString()) {
+		return QString(node[key].GetString());
+	}
+	else {
+		throw "Could not read string from node";
+	}
+}
+
 void MainWindow::onTestUseLayers(){
 	LayersOptionDialog dlg;
 	if (dlg.exec()) {
-		//check the sum weight equals 1
+		// first check the sum of interWeight and intraWeight
 		float weight = 0.0f;
-		if (dlg.getUseSymmetryLineOpt())
-			weight += dlg.getSymmetryWeight();
-		if (dlg.getUseRaOpt())
-			weight += dlg.getRaWeight();
-		if (dlg.getUseParallelOpt())
-			weight += dlg.getParallelWeight();
-		if (dlg.getUseAccuracyOpt())
-			weight += dlg.getAccuracyWeight();
+		if (dlg.getUseIntraOpt())
+			weight += dlg.getIntraWeight();
+		if (dlg.getUseInterOpt())
+			weight += dlg.getInterWeight();
 		if (abs(weight - 1.0f) < 0.0001)
 		{
-			std::cout << "Success!!" << std::endl;
+			std::cout << "Success in Intra and Inter!!" << std::endl;
 		}
 		else{
-			std::cout << "Please check weight assignment!!!" << std::endl;
+			std::cout << "Please check weights for Intra and Inter!!!" << std::endl;
 			return;
 		}
+
+		// second check the sum of sub terms in InterWeight
+		weight = 0.0f;
+		if (dlg.getUseIntraOpt()){
+			if (dlg.getUseSymmetryLineOpt())
+				weight += dlg.getSymmetryWeight();
+			if (dlg.getUseRaOpt())
+				weight += dlg.getRaWeight();
+			if (dlg.getUseParallelOpt())
+				weight += dlg.getParallelWeight();
+			if (dlg.getUseAccuracyOpt())
+				weight += dlg.getAccuracyWeight();
+			if (abs(weight - 1.0f) < 0.0001)
+			{
+				std::cout << "Success in intra weight assignment!!" << std::endl;
+			}
+			else{
+				std::cout << "Please check intra weight assignment!!!" << std::endl;
+				return;
+			}
+		}
+		// third check the sum of sub terms in IntraWeight
+		weight = 0.0f;
+		if (dlg.getUseInterOpt()){
+			if (dlg.getUsePointSnapOpt())
+				weight += dlg.getPointWeight();
+			if (dlg.getUseSegSnapOpt())
+				weight += dlg.getSegWeight();
+			if (abs(weight - 1.0f) < 0.0001)
+			{
+				std::cout << "Success in inter weight assignment!!" << std::endl;
+			}
+			else{
+				std::cout << "Please check inter weight assignment!!!" << std::endl;
+			}
+
+		}
+
 		// read files one by one
 		QString input_dir = dlg.ui.lineEditInput->text();
 		QString output_dir = dlg.ui.lineEditOutput->text();
@@ -265,7 +311,7 @@ void MainWindow::onTestUseLayers(){
 		while (!in_tree_info.atEnd()){
 			QString line = in_tree_info.readLine();
 			QStringList fields = line.split(",");
-			std::cout << "mother is " << fields.at(0).toInt() << ", child is " << fields.at(1).toInt() << std::endl;
+			//std::cout << "mother is " << fields.at(0).toInt() << ", child is " << fields.at(1).toInt() << std::endl;
 			tree_info_tmp.push_back(std::make_pair(fields.at(0).toInt(), fields.at(1).toInt()));
 		}
 		tree_info_file.close();
@@ -281,22 +327,110 @@ void MainWindow::onTestUseLayers(){
 				}
 			}
 		}
-		for (int node = 0; node < num_files - 2; node++){
-			std::cout << "node " << node << "'s mother nodes are as follows:" << std::endl;
-			for (int j = 0; j < tree_info[node].first.size(); j++){
-				std::cout << tree_info[node].first[j] << ",";
-			}
-			std::cout << std::endl;
-			std::cout << "node " << node << "'s children nodes are as follows:" << std::endl;
-			for (int j = 0; j < tree_info[node].second.size(); j++){
-				std::cout << tree_info[node].second[j] << ",";
-			}
-			std::cout << std::endl;
+
+		// generate the config file
+		rapidjson::Document document;
+		document.SetObject();
+		// must pass an allocator when the object may need to allocate memory
+		rapidjson::Document::AllocatorType& allocator = document.GetAllocator();
+		
+		// add member UseIntra
+		document.AddMember("UseIntra", dlg.getUseIntraOpt(), allocator);
+		document.AddMember("UseInter", dlg.getUseInterOpt(), allocator);
+
+		// add Intra sub terms
+		if (dlg.getUseIntraOpt()){
+			// create a rapidjson object type
+			rapidjson::Value object(rapidjson::kObjectType);
+
+			rapidjson::Value objectRa(rapidjson::kObjectType);
+			// RA term
+			objectRa.AddMember("UseOpt", dlg.getUseRaOpt(), allocator);
+			objectRa.AddMember("AngleThreshold", dlg.getRaThreshold(), allocator);
+			objectRa.AddMember("Weight", dlg.getRaWeight(), allocator);
+			object.AddMember("RA", objectRa, allocator);
+			// Parallel term
+			rapidjson::Value objectParallel(rapidjson::kObjectType);
+			objectParallel.AddMember("UseOpt", dlg.getUseParallelOpt(), allocator);
+			objectParallel.AddMember("AngleThreshold", dlg.getParallelThreshold(), allocator);
+			objectParallel.AddMember("Weight", dlg.getParallelWeight(), allocator);
+			object.AddMember("Parallel", objectParallel, allocator);
+			// Symmetry term
+			rapidjson::Value objectSymmetry(rapidjson::kObjectType);
+			objectSymmetry.AddMember("UseOpt", dlg.getUseSymmetryLineOpt(), allocator);
+			objectSymmetry.AddMember("IouThreshold", dlg.getIOUThreshold(), allocator);
+			objectSymmetry.AddMember("Weight", dlg.getSymmetryWeight(), allocator);
+			object.AddMember("Symmetry", objectSymmetry, allocator);
+			// Accuracy term
+			rapidjson::Value objectAccuracy(rapidjson::kObjectType);
+			objectAccuracy.AddMember("UseOpt", dlg.getUseAccuracyOpt(), allocator);
+			objectAccuracy.AddMember("Weight", dlg.getAccuracyWeight(), allocator);
+			object.AddMember("Accuracy", objectAccuracy, allocator);
+
+			document.AddMember("IntraOpt", object, allocator);
 		}
+
+		// add Inter sub terms
+		if (dlg.getUseInterOpt()){
+			// create a rapidjson object type
+			rapidjson::Value object(rapidjson::kObjectType);
+			// Point term
+			rapidjson::Value objectPoint(rapidjson::kObjectType);
+			objectPoint.AddMember("UseOpt", dlg.getUsePointSnapOpt(), allocator);
+			objectPoint.AddMember("DisThreshold", dlg.getPointDisThreshold(), allocator);
+			objectPoint.AddMember("Weight", dlg.getPointWeight(), allocator);
+			object.AddMember("PointSnap", objectPoint, allocator);
+			// Seg term
+			rapidjson::Value objectSeg(rapidjson::kObjectType);
+			objectSeg.AddMember("UseOpt", dlg.getUseSegSnapOpt(), allocator);
+			objectSeg.AddMember("DisThreshold", dlg.getSegDisThreshold(), allocator);
+			objectSeg.AddMember("AngleThreshold", dlg.getSegAngleThreshold(), allocator);
+			objectSeg.AddMember("Weight", dlg.getSegWeight(), allocator);
+			object.AddMember("SegSnap", objectSeg, allocator);
+			document.AddMember("InterOpt", object, allocator);
+		}
+
+		rapidjson::StringBuffer strbuf;
+		rapidjson::Writer<rapidjson::StringBuffer> writer(strbuf);
+		document.Accept(writer);
+
+		std::cout << strbuf.GetString() << std::endl;
+
+		QString filename_new = "../test/config.json"; 
+		{
+			QFile file(filename_new);
+			file.remove();
+		}
+		QFile file_new(filename_new);
+		if (file_new.open(QIODevice::ReadWrite))
+		{
+			QTextStream stream(&file_new);
+			stream << strbuf.GetString();
+		}
+		file_new.close();
+		// read json file
+		/*{
+			QFile file("../test/config.json");
+			if (!file.open(QIODevice::ReadOnly)) {
+				std::cerr << "File was not readable: " << std::endl;
+				return ;
+			}
+			QTextStream in(&file);
+			rapidjson::Document doc;
+			doc.Parse(in.readAll().toUtf8().constData());
+			bool test = readBoolValue(doc, "t", false);
+			std::cout << "test is " << test << std::endl;
+			float test_f = 0.0f;
+			if (doc.HasMember("pi")) {
+				test_f =  doc["pi"].GetFloat();
+				std::cout << "test_f is " << test_f << std::endl;
+			}
+		}*/
 		// test layer
 		{
-			//Regularizer reg;
-			//reg.regularizerForLayers(fileNameList, height_info, dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, dlg.getUseSymmetryLineOpt(), dlg.getIOUThreshold(), dlg.getSymmetryWeight(), dlg.getUseRaOpt(), dlg.getRaThreshold(), dlg.getRaWeight(), dlg.getUseParallelOpt(), dlg.getParallelThreshold(), dlg.getParallelWeight(), dlg.getUseAccuracyOpt(), dlg.getAccuracyWeight());
+			Regularizer reg;
+			reg.regularizerForLayers(fileNameList, height_info, tree_info, dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
+			//reg.regularizerForLayer("../test/2.png", dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
 		}
 		// test layers
 	}

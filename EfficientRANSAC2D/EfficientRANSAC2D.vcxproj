@@ -112,6 +112,7 @@
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\Config.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ContourGenerator.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\CurveDetector.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\EfficientRANSAC.cpp" />
@@ -125,6 +126,7 @@
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFit.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayer.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayers.cpp" />
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayersInter.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\SymmetryLineDetector.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\Util.cpp" />
     <ClCompile Include="Canvas.cpp" />
@@ -197,6 +199,7 @@
     <QtRcc Include="MainWindow.qrc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\Config.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ContourGenerator.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\CurveDetector.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\EfficientRANSAC.h" />
@@ -210,6 +213,7 @@
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFit.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayer.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayers.h" />
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayersInter.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\SymmetryLineDetector.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\Util.h" />
     <ClInclude Include="Canvas.h" />

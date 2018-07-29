@@ -1,17 +1,17 @@
-#include "ShapeFitLayers.h"
+#include "ShapeFitLayersInter.h"
 #include <QFileDialog>
 #include <QTextStream>
 #include "../EfficientRANSAC2D_NoGUI/rapidjson/document.h"
 #include "../EfficientRANSAC2D_NoGUI/rapidjson/writer.h"
 #include "../EfficientRANSAC2D_NoGUI/rapidjson/stringbuffer.h"
 
-ShapeFitLayers::ShapeFitLayers() {
+ShapeFitLayersInter::ShapeFitLayersInter() {
 }
 
-ShapeFitLayers::~ShapeFitLayers() {
+ShapeFitLayersInter::~ShapeFitLayersInter() {
 }
 
-void ShapeFitLayers::fit(std::vector<Layer>& layers, QString config_file)
+void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 {
 	bool bUseIntra = false;
 	bool bUseInter = false;
@@ -157,38 +157,34 @@ void ShapeFitLayers::fit(std::vector<Layer>& layers, QString config_file)
 		}
 	}
 
+
 	int total_points = 0;
 	std::vector<layer_polygons> normalized_polygons_init(layers.size());
-	for (int k = 0; k < layers.size(); k++){
-		normalized_polygons_init[k].resize(layers[k].contours_pre.size());
-		for (int i = 0; i < layers[k].contours_pre.size(); i++) {
-			normalized_polygons_init[k][i].resize(layers[k].contours_pre[i].size());
-			total_points += layers[k].contours_pre[i].size();
-			for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
-				normalized_polygons_init[k][i][j] = cv::Point2f((layers[k].contours_pre[i][j].x - min_x) / max_unit, (layers[k].contours_pre[i][j].y - min_y) / max_unit);
+	if (bUseIntra){
+		for (int k = 0; k < layers.size(); k++){
+			normalized_polygons_init[k].resize(layers[k].contours.size());
+			for (int i = 0; i < layers[k].contours.size(); i++) {
+				normalized_polygons_init[k][i].resize(layers[k].contours[i].size());
+				total_points += layers[k].contours[i].size();
+				for (int j = 0; j < layers[k].contours[i].size(); j++){
+					normalized_polygons_init[k][i][j] = cv::Point2f((layers[k].contours[i][j].x - min_x) / max_unit, (layers[k].contours[i][j].y - min_y) / max_unit);
+				}
+			}
+		}
+	}
+	else{
+		for (int k = 0; k < layers.size(); k++){
+			normalized_polygons_init[k].resize(layers[k].contours_pre.size());
+			for (int i = 0; i < layers[k].contours_pre.size(); i++) {
+				normalized_polygons_init[k][i].resize(layers[k].contours_pre[i].size());
+				total_points += layers[k].contours_pre[i].size();
+				for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
+					normalized_polygons_init[k][i][j] = cv::Point2f((layers[k].contours_pre[i][j].x - min_x) / max_unit, (layers[k].contours_pre[i][j].y - min_y) / max_unit);
+				}
 			}
 		}
 	}
 
-	// we need to check whether there are valid angles
-	if (bUseRaOpt || bUseParallelOpt){
-		bool bValid = false;
-		for (int k = 0; k < layers.size(); k++){
-			for (int i = 0; i < layers[k].contours_pre.size(); i++){
-				if (layers[k].contours_pre[i].size() != 0){
-					if (validRAorParallel(layers[k].contours_pre[i], bUseRaOpt, angle_threshold_RA, bUseParallelOpt, angle_threshold_parallel)){
-						bValid = true;
-						break;
-					}
-				}
-			}
-			if (bValid)
-				break;
-		}
-		if (!bValid){
-			std::cout << "no need to do optimizaiton for RA and parallel" << std::endl;
-		}
-	}
 	std::vector<std::pair<float, float>> layers_height;
 	layers_height.resize(layers.size());
 	for (int k = 0; k < layers.size(); k++){
@@ -220,12 +216,12 @@ void ShapeFitLayers::fit(std::vector<Layer>& layers, QString config_file)
 			find_min_using_approximate_derivatives(dlib::bfgs_search_strategy(), dlib::objective_delta_stop_strategy(1e-7), solver, starting_point, 0, 0.0001);
 		start_index = 0;
 		for (int k = 0; k < layers.size(); k++){
-			layers[k].contours.resize(layers[k].contours_pre.size());
+			layers[k].contours_snap.resize(layers[k].contours_pre.size());
 			for (int i = 0; i < layers[k].contours_pre.size(); i++) {
-				layers[k].contours[i].resize(layers[k].contours_pre[i].size());
+				layers[k].contours_snap[i].resize(layers[k].contours_pre[i].size());
 				for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
-					layers[k].contours[i][j].x = starting_point((j + start_index) * 2) * max_unit + min_x;
-					layers[k].contours[i][j].y = starting_point((j + start_index) * 2 + 1) * max_unit + min_y;
+					layers[k].contours_snap[i][j].x = starting_point((j + start_index) * 2) * max_unit + min_x;
+					layers[k].contours_snap[i][j].y = starting_point((j + start_index) * 2 + 1) * max_unit + min_y;
 				}
 				start_index += layers[k].contours_pre[i].size();
 			}
@@ -243,7 +239,7 @@ void ShapeFitLayers::fit(std::vector<Layer>& layers, QString config_file)
 
 }
 
-bool ShapeFitLayers::validRAorParallel(const std::vector<cv::Point2f>& polygon, bool bUseRaOpt, int ra_angle_threshold, bool bUseParallelOpt, int parallel_angle_threshold){
+bool ShapeFitLayersInter::validRAorParallel(const std::vector<cv::Point2f>& polygon, bool bUseRaOpt, int ra_angle_threshold, bool bUseParallelOpt, int parallel_angle_threshold){
 	int total_segments = polygon.size();
 	if (bUseRaOpt){
 		for (int i = 0; i < total_segments; i++){

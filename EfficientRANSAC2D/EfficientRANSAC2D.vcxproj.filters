@@ -172,6 +172,12 @@
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\Config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayersInter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="MainWindow.qrc">
@@ -252,6 +258,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayersInter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

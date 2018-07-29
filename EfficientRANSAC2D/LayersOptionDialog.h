@@ -47,6 +47,21 @@ public:
 	bool getUseAccuracyOpt();
 	float getAccuracyWeight();
 
+	// new functions
+	bool getUseIntraOpt();
+	bool getUseInterOpt();
+
+	float getIntraWeight();
+	float getInterWeight();
+
+	bool getUsePointSnapOpt();
+	float getPointDisThreshold();
+	float getPointWeight();
+	bool getUseSegSnapOpt();
+	float getSegDisThreshold();
+	float getSegAngleThreshold();
+	float getSegWeight();
+
 public:
 	Ui::LayersOptionDialog ui;
 
@@ -60,4 +75,10 @@ public:
 	void onUseAccuracyOpt();
 	void onOK();
 	void onCancel();
+
+	// new functions
+	void onUseIntraOpt();
+	void onUseInterOpt();
+	void onUsePointSnapOpt();
+	void onUseSegSnapOpt();
 };
