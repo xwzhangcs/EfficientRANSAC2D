@@ -58,7 +58,35 @@ void ContourGenerator::generate(const util::Polygon& polygon, const std::vector<
 							break;
 						}
 					}
+					// we also need to make sure this intersection point is not inside of the line segment or in the reverse order
+					float dis_start_j = cv::norm(shapes[j].second->startPoint() - int_pt);
+					float dis_end_j = cv::norm(shapes[j].second->endPoint() - int_pt);
+					float dis_j = cv::norm(shapes[j].second->startPoint() - shapes[j].second->endPoint());
+					if (valid){
+						if (abs(dis_start_j + dis_end_j - dis_j) < 0.001){
+							valid = false;
+						}
+						else if (dis_start_j < dis_end_j){
+							valid = false;
+						}
+						else{
 
+						}
+					}
+					float dis_start_j2 = cv::norm(shapes[j2].second->startPoint() - int_pt);
+					float dis_end_j2 = cv::norm(shapes[j2].second->endPoint() - int_pt);
+					float dis_j2 = cv::norm(shapes[j2].second->startPoint() - shapes[j2].second->endPoint());
+					if (valid){
+						if (abs(dis_start_j2 + dis_end_j2 - dis_j2) < 0.001){
+							valid = false;
+						}
+						else if (dis_start_j2 > dis_end_j2){
+							valid = false;
+						}
+						else{
+
+						}
+					}
 					if (valid) {
 						contour.push_back(int_pt);
 						continue;

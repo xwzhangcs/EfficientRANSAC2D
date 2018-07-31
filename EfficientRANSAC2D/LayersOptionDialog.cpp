@@ -42,18 +42,18 @@ LayersOptionDialog::LayersOptionDialog(QWidget *parent)
 	ui.checkBoxAccuracy->setChecked(false);
 	ui.lineEditAccuracyWeight->setText("0.25");
 
-	ui.checkBoxUseIntra->setChecked(true);
 	ui.checkBoxUseIntra->setChecked(false);
-	ui.lineEditIntraWeight->setText("0.5");
-	ui.lineEditInterWeight->setText("0.5");
+	ui.checkBoxUseInter->setChecked(false);
+	ui.lineEditIntraWeight->setText("1.0");
+	ui.lineEditInterWeight->setText("1.0");
 
 	ui.checkBoxPointSnap->setChecked(false);
-	ui.lineEditPointDisThreshold->setText("5");
-	ui.lineEditPointWeight->setText("0.5");
+	ui.lineEditPointDisThreshold->setText("10");
+	ui.lineEditPointWeight->setText("1.0");
 	ui.checkBoxSegSnap->setChecked(false);
-	ui.lineEditSegDisThreshold->setText("5");
+	ui.lineEditSegDisThreshold->setText("10");
 	ui.lineEditSegAngleThreshold->setText("10");
-	ui.lineEditSegWeight->setText("0.5");
+	ui.lineEditSegWeight->setText("1.0");
 
 	connect(ui.checkBoxUseRA, SIGNAL(clicked()), this, SLOT(onUseRA()));
 	connect(ui.pushButtonOK, SIGNAL(clicked()), this, SLOT(onOK()));

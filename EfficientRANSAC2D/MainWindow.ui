@@ -52,6 +52,7 @@
     <addaction name="actionBatchFiles"/>
     <addaction name="actionReflection"/>
     <addaction name="actionLayers"/>
+    <addaction name="actionCombineImages"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTool"/>
@@ -149,6 +150,11 @@
   <action name="actionLayers">
    <property name="text">
     <string>Use Layers</string>
+   </property>
+  </action>
+  <action name="actionCombineImages">
+   <property name="text">
+    <string>Combine images</string>
    </property>
   </action>
  </widget>

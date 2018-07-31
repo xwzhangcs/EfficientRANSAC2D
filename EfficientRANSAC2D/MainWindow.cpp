@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	connect(ui.actionReflection, SIGNAL(triggered()), this, SLOT(onTestReflection()));
 	connect(ui.actionDetectSymmetryLine, SIGNAL(triggered()), this, SLOT(onDetectSymmetryLine()));
 	connect(ui.actionLayers, SIGNAL(triggered()), this, SLOT(onTestUseLayers()));
+	connect(ui.actionCombineImages, SIGNAL(triggered()), this, SLOT(onCombineImages()));
 }
 
 void MainWindow::onOpen() {
@@ -430,7 +431,7 @@ void MainWindow::onTestUseLayers(){
 		{
 			Regularizer reg;
 			reg.regularizerForLayers(fileNameList, height_info, tree_info, dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
-			//reg.regularizerForLayer("../test/2.png", dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
+			//reg.regularizerForLayer("../test/1.png", dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
 		}
 		// test layers
 	}
@@ -443,6 +444,30 @@ void MainWindow::onTestReflection(){
 	cv::Point2f b = cv::Point2f(1, 1);
 	cv::Point2f result = util::mirrorPoint(a, b, p);
 	std::cout << "mirror point is " << result << std::endl;
+}
+
+void MainWindow::onCombineImages(){
+	QImage overlay;
+	overlay.load("../test/contours_snap_1.png");
+	QPixmap base;
+	base.load("../test/contours_snap_0.png");
+	QPainter painter;
+	painter.begin(&base);
+
+	for (int i = 0; i < base.width(); i++){
+		for (int j = 0; j < base.height(); j++){
+			QColor clrCurrent(overlay.pixel(i, j));
+			if (clrCurrent.red() == 0 && clrCurrent.green() != 0 && clrCurrent.blue() != 0){
+				painter.setPen(clrCurrent);
+				painter.drawPoint(i, j);
+			}
+			else{
+
+			}
+		}
+	}
+	painter.end();
+	base.save("../test/result.png");
 }
 
 void MainWindow::onDetectSymmetryLine(){

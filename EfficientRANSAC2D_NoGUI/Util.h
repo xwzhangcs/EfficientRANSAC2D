@@ -51,6 +51,7 @@ namespace util {
 	// distance
 	float distance(const cv::Point2f& a, const cv::Point2f& b, const cv::Point2f& c, bool segment_only);
 	float distance(const cv::Point2f& a, const cv::Point2f& b, const cv::Point2f& c);
+	float distance(const cv::Point2f& a, const cv::Point2f& b, const cv::Point2f& c, const cv::Point2f& d);
 
 	// compute mirror point
 	cv::Point2f mirrorPoint(const cv::Point2f& a, const cv::Point2f& b, const cv::Point2f& c);

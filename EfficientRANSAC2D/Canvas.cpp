@@ -280,7 +280,6 @@ void Canvas::generateContoursPolygon(int curve_num_iterations, int curve_min_poi
 		ContourGenerator::generate(polygons[i], shapes[i], contours_pre[i], contour_max_error, contour_angle_threshold);
 		if (contours_pre[i].size() == 0)
 			continue;
-
 		// shapefit
 		std::vector<cv::Point2f> sparse_contour;
 		if (polygons.size() == sparse_polygons.size())
@@ -638,7 +637,6 @@ void Canvas::paintEvent(QPaintEvent *event) {
 			//	painter.drawPolygon(pol);
 			//}
 		}
-
 		// draw symmetry line
 		if (symmetry_lines.size() != 0){
 			for (int i = 0; i < symmetry_lines.size(); i++){

@@ -26,4 +26,5 @@ public slots:
 	void onTestBatchFiles();
 	void onTestReflection();
 	void onTestUseLayers();
+	void onCombineImages();
 };

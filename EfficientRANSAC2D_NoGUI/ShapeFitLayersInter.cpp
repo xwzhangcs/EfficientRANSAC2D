@@ -82,7 +82,6 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 	if (!bUseIntra && !bUseInter){
 		return;
 	}
-	Config config(bUseIntra, bUseInter, bUseRaOpt, angle_threshold_RA, raWeight, bUseParallelOpt, angle_threshold_parallel, parallelWeight, bUseSymmetryLineOpt, symmetryWeight, bUseAccuracyOpt, accuracyWeight, bUsePointSnapOpt, pointDisThreshold, pointWeight, bUseSegSnapOpt, segDisThreshold, segAngleThreshold, segWeight);
 	//{
 	//	std::cout << "bUseRa " << config->bUseRaOpt << " ra angle is " << config->angle_threshold_RA << " ra weight is " << config->raWeight << std::endl;
 	//	std::cout << "bUseParallel " << config->bUseParallelOpt << " Parallel angle is " << config->angle_threshold_parallel << " Parallel weight is " << config->parallelWeight << std::endl;
@@ -130,6 +129,8 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 		}
 	}
 	float max_unit = std::max(max_x - min_x, max_y - min_y);
+	Config config(bUseIntra, bUseInter, bUseRaOpt, angle_threshold_RA, raWeight, bUseParallelOpt, angle_threshold_parallel, parallelWeight, bUseSymmetryLineOpt, symmetryWeight, bUseAccuracyOpt, accuracyWeight, bUsePointSnapOpt, pointDisThreshold / max_unit, pointWeight, bUseSegSnapOpt, segDisThreshold / max_unit, segAngleThreshold, segWeight);
+
 	std::vector<layer_polygons> normalized_polygons(layers.size());
 	for (int k = 0; k < layers.size(); k++){
 		normalized_polygons[k].resize(layers[k].sparse_contours.size());
@@ -161,6 +162,7 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 	int total_points = 0;
 	std::vector<layer_polygons> normalized_polygons_init(layers.size());
 	if (bUseIntra){
+		std::cout << "use contours!!!!" << std::endl;
 		for (int k = 0; k < layers.size(); k++){
 			normalized_polygons_init[k].resize(layers[k].contours.size());
 			for (int i = 0; i < layers[k].contours.size(); i++) {
@@ -173,6 +175,7 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 		}
 	}
 	else{
+		std::cout << "use contours_pre!!!!" << std::endl;
 		for (int k = 0; k < layers.size(); k++){
 			normalized_polygons_init[k].resize(layers[k].contours_pre.size());
 			for (int i = 0; i < layers[k].contours_pre.size(); i++) {
@@ -189,12 +192,27 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 	layers_height.resize(layers.size());
 	for (int k = 0; k < layers.size(); k++){
 		layers_height[k] = std::make_pair(layers[k].top_height, layers[k].bottom_height);
+		std::cout << "layers_height " << k << ", top height is " << layers_height[k].first << ", bot height is " << layers_height[k].second << std::endl;
 	}
 	// tree info
 	std::vector<std::pair<std::vector<int>, std::vector<int>>> tree_info;
 	tree_info.resize(layers.size());
 	for (int k = 0; k < layers.size(); k++){
 		tree_info[k] = std::make_pair(layers[k].parents, layers[k].children);
+		if (tree_info[k].first.size() == 0)
+			std::cout << "tree_info " << k << ", no parent nodes" << std::endl;
+		else{
+			for (int j = 0; j < tree_info[k].first.size(); j++)
+				std::cout << "tree_info " << k << ", parent nodes are " << tree_info[k].first[j]<<", ";
+			std::cout << std::endl;
+		}
+		if (tree_info[k].second.size() == 0)
+			std::cout << "tree_info " << k << ", no children nodes" << std::endl;
+		else{
+			for (int j = 0; j < tree_info[k].second.size(); j++)
+				std::cout << "tree_info " << k << ", children nodes are " << tree_info[k].second[j] << ", ";
+			std::cout << std::endl;
+		}
 	}
 	try {
 		std::cout << "total points is " << total_points << std::endl;
@@ -209,6 +227,90 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 				start_index += normalized_polygons_init[k][i].size();
 			}
 		}
+		// test point
+		//{
+		//	float score = 0.0f;
+		//	std::cout << "normalized_polygons_init size is " << normalized_polygons_init.size() << std::endl;
+		//	std::cout << "config.pointDisThreshold is " << config.pointDisThreshold << std::endl;
+		//	std::cout << "max_unit is " << max_unit << std::endl;
+		//	for (int k = 0; k < normalized_polygons_init.size(); k++){
+		//		for (int i = 0; i < normalized_polygons_init[k].size(); i++){
+		//			if (normalized_polygons_init[k][i].size() != 0){
+		//				std::cout << "--------------------------" << std::endl;
+		//				// optimization score for one polygon
+		//				if (config.bUsePointSnapOpt){
+		//					int valid_num = 0;
+		//					std::cout << "Point Snap" << std::endl;
+		//					for (int j = 0; j < tree_info[k].second.size(); j++){
+		//						std::cout << "layer "<< k << " children nodes from layer " << tree_info[k].second[j] << std::endl;
+		//						float score_tmp = util::calculateScorePointOpt(normalized_polygons_init[k][i], normalized_polygons_init[k][i], normalized_polygons_init[tree_info[k].second[j]], normalized_polygons_init[tree_info[k].second[j]], config.pointDisThreshold);
+		//						if (abs(score_tmp) > 0.1){
+		//							valid_num++;
+		//							score += score_tmp;
+		//						}
+		//					}
+		//					for (int j = 0; j < tree_info[k].first.size(); j++){
+		//						std::cout << "layer " << k << " parents nodes from layer " << tree_info[k].first[j] << std::endl;
+		//						float score_tmp = util::calculateScorePointOpt(normalized_polygons_init[k][i], normalized_polygons_init[k][i], normalized_polygons_init[tree_info[k].first[j]], normalized_polygons_init[tree_info[k].first[j]], config.pointDisThreshold);
+		//						if (abs(score_tmp) > 0.1){
+		//							valid_num++;
+		//							score += score_tmp;
+		//						}
+		//					}
+		//					std::cout << "valid_num is " << valid_num << std::endl;
+		//					if (valid_num > 0){
+		//						score = score / valid_num;
+		//						score = score * config.pointWeight;
+		//					}
+		//					
+		//				}
+		//				std::cout << "--------------------------" << std::endl;
+		//			}
+		//		}
+		//	}
+		//}
+
+		// test segs
+		/*{
+			float score = 0.0f;
+			std::cout << "normalized_polygons_init size is " << normalized_polygons_init.size() << std::endl;
+			std::cout << "config.pointDisThreshold is " << config.pointDisThreshold << std::endl;
+			std::cout << "config.segAngleThreshold is " << config.segAngleThreshold << std::endl;
+			std::cout << "max_unit is " << max_unit << std::endl;
+			for (int k = 0; k < normalized_polygons_init.size(); k++){
+				for (int i = 0; i < normalized_polygons_init[k].size(); i++){
+					if (normalized_polygons_init[k][i].size() != 0){
+						std::cout << "--------------------------" << std::endl;
+						// optimization score for one polygon
+						if (config.bUseSegSnapOpt){
+							int valid_num = 0;
+							std::cout << "Seg Snap" << std::endl;
+							for (int j = 0; j < tree_info[k].second.size(); j++){
+								std::cout << "layer " << k << " children nodes from layer " << tree_info[k].second[j] << std::endl;
+								float score_tmp = util::calculateScoreSegOpt(normalized_polygons_init[k][i], normalized_polygons_init[k][i], normalized_polygons_init[tree_info[k].second[j]], normalized_polygons_init[tree_info[k].second[j]], config.segDisThreshold, config.segAngleThreshold);
+								if (abs(score_tmp) > 0.1){
+									valid_num++;
+									score += score_tmp;
+								}
+							}
+							for (int j = 0; j < tree_info[k].first.size(); j++){
+								std::cout << "layer " << k << " parents nodes from layer " << tree_info[k].first[j] << std::endl;
+								float score_tmp = util::calculateScoreSegOpt(normalized_polygons_init[k][i], normalized_polygons_init[k][i], normalized_polygons_init[tree_info[k].first[j]], normalized_polygons_init[tree_info[k].first[j]], config.segDisThreshold, config.segAngleThreshold);
+								if (abs(score_tmp) > 0.1){
+									valid_num++;
+									score += score_tmp;
+								}
+							}
+							if (valid_num > 0){
+								score = score / valid_num;
+								score = score * config.segWeight;
+							}
+						}
+						std::cout << "--------------------------" << std::endl;
+					}
+				}
+			}
+		}*/
 		BFGSSolver solver(normalized_polygons, normalized_polygons_init, normalized_symmetry_lines, layers_height, tree_info, config);
 		if (true)
 			find_max_using_approximate_derivatives(dlib::bfgs_search_strategy(), dlib::objective_delta_stop_strategy(1e-7), solver, starting_point, 1, 0.0001);

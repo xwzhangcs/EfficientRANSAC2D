@@ -3,6 +3,7 @@
 #include "../EfficientRANSAC2D_NoGUI/ShapeFit.h"
 #include "../EfficientRANSAC2D_NoGUI/ShapeFitLayer.h"
 #include "../EfficientRANSAC2D_NoGUI/ShapeFitLayers.h"
+#include "../EfficientRANSAC2D_NoGUI/ShapeFitLayersInter.h"
 #include "../EfficientRANSAC2D_NoGUI/rapidjson/document.h"
 #include "../EfficientRANSAC2D_NoGUI/rapidjson/writer.h"
 #include "../EfficientRANSAC2D_NoGUI/rapidjson/stringbuffer.h"
@@ -35,11 +36,10 @@ void Regularizer::regularizerForLayer(QString fileName, int curve_num_iterations
 	}
 	else{
 		file.close();
-		return;
 	}
 	createLayer(fileName, input, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, contour_max_error, contour_angle_threshold, bUseSymmetryLineOpt, iouThreahold);
 	generateContoursLayer(input, config_file);
-	saveImage(input, 0);
+	saveImage(input, 1, 1);
 }
 
 void Regularizer::regularizerForLayers(const std::vector<QString> &fileNameList, const std::vector<std::pair<float, float>>& height_infoint, const std::vector<std::pair<std::vector<int>, std::vector<int>>>& tree_info, int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, QString config_file){
@@ -66,13 +66,95 @@ void Regularizer::regularizerForLayers(const std::vector<QString> &fileNameList,
 	}
 	else{
 		file.close();
-		return;
 	}
 	createLayers(fileNameList, height_infoint, tree_info, input_layers, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, contour_max_error, contour_angle_threshold, bUseSymmetryLineOpt, iouThreahold);
 	generateContoursLayers(input_layers, config_file);
 	for (int i = 0; i < input_layers.size(); i++){
-		saveImage(input_layers[i], i);
+		saveImage(input_layers[i], i, 2);
 		//std::cout << "layer " << i << " top height is " << input_layers[i].top_height << " bot height is " << input_layers[i].bottom_height << std::endl;
+	}
+	// verify point opt
+	/*{
+		//before opt
+		std::cout << "----------before opt-----------" << std::endl;
+		for (int i = 0; i < input_layers[0].contours_pre[0].size(); i++){
+			for (int j = 0; j < input_layers[1].contours_pre[0].size(); j++){
+				cv::Point2f src_init_p = input_layers[0].contours_pre[0][i];
+				cv::Point2f des_init_p = input_layers[1].contours_pre[0][j];
+				float dis_init = cv::norm(src_init_p - des_init_p);
+				std::cout << "dis_init from " << i << " to " << j << " is " << dis_init << std::endl;
+			}
+		}
+		//after opt
+		std::cout << "----------after opt-----------" << std::endl;
+		for (int i = 0; i < input_layers[0].contours_snap[0].size(); i++){
+			for (int j = 0; j < input_layers[1].contours_snap[0].size(); j++){
+				cv::Point2f src_init_p = input_layers[0].contours_snap[0][i];
+				cv::Point2f des_init_p = input_layers[1].contours_snap[0][j];
+				float dis_init = cv::norm(src_init_p - des_init_p);
+				std::cout << "dis_init from " << i << " to " << j << " is " << dis_init << std::endl;
+			}
+		}
+	}*/
+
+	// verify seg opt
+	{
+		//before opt
+		std::cout << "----------before opt-----------" << std::endl;
+		int total_seg_src = input_layers[0].contours_pre[0].size();
+		int total_seg_des = input_layers[1].contours_pre[0].size();
+		for (int i = 0; i < input_layers[0].contours_pre[0].size(); i++)
+		{
+			for (int j = 0; j < input_layers[1].contours_pre[0].size(); j++)
+			{
+				cv::Point2f src_init_start = input_layers[0].contours_pre[0][i];
+				cv::Point2f src_init_end = input_layers[0].contours_pre[0][(i + 1) % total_seg_src];
+				cv::Point2f des_init_start = input_layers[1].contours_pre[0][j];
+				cv::Point2f des_init_end = input_layers[1].contours_pre[0][(j + 1) % total_seg_des];
+				// distance check
+				float dis_init = util::distance(src_init_start, src_init_end, des_init_start, des_init_end);
+				std::cout << "dis_check ( " << i << " , " << (i + 1) % total_seg_src << ")  to (" << j << ", " << (j + 1) % total_seg_des << ") is " << dis_init << std::endl;
+				if (dis_init > 10){
+					std::cout << "dis_check failed" << std::endl;
+					continue;
+				}
+				// angle check
+				float angle_init = util::lineLineAngle(src_init_start, src_init_end, des_init_start, des_init_end);
+				std::cout << "angle_check ( " << i << " , " << (i + 1) % total_seg_src << ")  to (" << j << ", " << (j + 1) % total_seg_des << ") is " << angle_init << std::endl;
+				if (!(abs(angle_init) <= 10 || abs(180 - angle_init) <= 10)){
+					std::cout << "angle_check failed" << std::endl;
+					continue;
+				}
+			}
+		}
+		//after opt
+		std::cout << "----------after opt-----------" << std::endl;
+		total_seg_src = input_layers[0].contours_snap[0].size();
+		total_seg_des = input_layers[1].contours_snap[0].size();
+		for (int i = 0; i < input_layers[0].contours_snap[0].size(); i++)
+		{
+			for (int j = 0; j < input_layers[1].contours_snap[0].size(); j++)
+			{
+				cv::Point2f src_init_start = input_layers[0].contours_snap[0][i];
+				cv::Point2f src_init_end = input_layers[0].contours_snap[0][(i + 1) % total_seg_src];
+				cv::Point2f des_init_start = input_layers[1].contours_snap[0][j];
+				cv::Point2f des_init_end = input_layers[1].contours_snap[0][(j + 1) % total_seg_des];
+				// distance check
+				float dis_init = util::distance(src_init_start, src_init_end, des_init_start, des_init_end);
+				std::cout << "dis_check ( " << i << " , " << (i + 1) % total_seg_src << ")  to (" << j << ", " << (j + 1) % total_seg_des << ") is " << dis_init << std::endl;
+				if (dis_init > 10){
+					std::cout << "dis_check failed" << std::endl;
+					continue;
+				}
+				// angle check
+				float angle_init = util::lineLineAngle(src_init_start, src_init_end, des_init_start, des_init_end);
+				std::cout << "angle_check ( " << i << " , " << (i + 1) % total_seg_src << ")  to (" << j << ", " << (j + 1) % total_seg_des << ") is " << angle_init << std::endl;
+				if (!(abs(angle_init) <= 10 || abs(180 - angle_init) <= 10)){
+					std::cout << "angle_check failed" << std::endl;
+					continue;
+				}
+			}
+		}
 	}
 }
 
@@ -155,6 +237,7 @@ void Regularizer::generateContoursLayer(Layer& input_layer, QString config_file)
 		file.close();
 	}
 	else{
+		input_layer.contours = input_layer.contours_pre;
 		file.close();
 		return;
 	}
@@ -178,42 +261,15 @@ void Regularizer::generateContoursLayer(Layer& input_layer, QString config_file)
 }
 
 void Regularizer::generateContoursLayers(std::vector<Layer>& input_layers, QString config_file){
-	// if all contours sizes are 0
-	bool bValidLayer = false;
+	// first do intra layer optimization
 	for (int i = 0; i < input_layers.size(); i++){
-		for (int j = 0; j < input_layers[i].contours_pre.size(); j++){
-			if (input_layers[i].contours_pre[j].size() != 0){
-				bValidLayer = true;
-				break;
-			}
-		}
-		if (bValidLayer)
-			break;
+		generateContoursLayer(input_layers[i], config_file);
 	}
-	if (!bValidLayer)
-		return;
-	// Here we have all original polygons, all initial points and all symmetry lines
-	// We call optimization below
-	ShapeFitLayers::fit(input_layers, config_file);
-	for (int i = 0; i < input_layers.size(); i++){
-		for (int j = 0; j < input_layers[i].contours.size(); j++){
-			////////// DEBUG //////////
-			// calculate IOU
-			if (input_layers[i].contours[j].size() != 0){
-				std::cout << "Layer " << i <<" Polygon " << j << std::endl;
-				std::cout << "contour size is " << input_layers[i].contours[j].size() << std::endl;
-				if (util::isSimple(input_layers[i].polygons[j].contour) && util::isSimple(input_layers[i].contours[j]))
-					std::cout << "IOU = " << util::calculateIOU(input_layers[i].polygons[j].contour, input_layers[i].contours[j]) << std::endl;
-				else
-					std::cout << "IOU = " << util::calculateIOUbyImage(input_layers[i].polygons[j].contour, input_layers[i].contours[j], 1000) << std::endl;
-				std::cout << "#vertices = " << input_layers[i].contours[j].size() << std::endl;
-				std::cout << "-----------------------" << std::endl;
-			}
-		}
-	}
+	// inter layer optimizaiton
+	ShapeFitLayersInter::fit(input_layers, config_file);
 }
 
-void Regularizer::saveImage(Layer & layer, int index){
+void Regularizer::saveImage(Layer & layer, int index, int level){
 	QImage src = layer.orig_image;
 	QImage image(QSize(src.width(), src.height()), QImage::Format_RGB32);
 	QPixmap pixmap;
@@ -235,15 +291,57 @@ void Regularizer::saveImage(Layer & layer, int index){
 			painter.drawPolygon(pgon);
 		}
 	}
-	painter.setPen(QPen(QColor(0, 0, 255), 3));
-	for (auto& contour : layer.contours) {
-		//painter.setPen(QPen(QColor(0, 0, 255), 3));
-		QPolygon pol;
-		for (int i = 0; i < contour.size(); i++) {
-			pol.push_back(QPoint(contour[i].x , contour[i].y));
+	if (level == 0){
+		if (layer.contours_pre.size() != 0){
+			for (auto& contour : layer.contours_pre) {
+				painter.setPen(QPen(QColor(0, 0, 255), 3));
+				QPolygon pol;
+				for (int i = 0; i < contour.size(); i++) {
+					pol.push_back(QPoint(contour[i].x, contour[i].y));
+				}
+				painter.drawPolygon(pol);
+			}
 		}
-		painter.drawPolygon(pol);
+		painter.end();
+		image.save("../test/contours_pre_" + QString::number(index) + ".png");
 	}
-	painter.end();
-	image.save("../test/output_" + QString::number(index) + ".png");
+	if (level == 1){
+		if (layer.contours.size() != 0){
+			for (auto& contour : layer.contours) {
+				painter.setPen(QPen(QColor(0, 0, 255), 3));
+				QPolygon pol;
+				for (int i = 0; i < contour.size(); i++) {
+					pol.push_back(QPoint(contour[i].x, contour[i].y));
+				}
+				painter.drawPolygon(pol);
+			}
+		}
+		painter.end();
+		image.save("../test/contours_" + QString::number(index) + ".png");
+	}
+	if (level == 2){
+		if (layer.contours_snap.size() != 0){
+			for (auto& contour : layer.contours_snap) {
+				painter.setPen(QPen(QColor(0, rand() % 256, rand() % 256), 3));
+				QPolygon pol;
+				for (int i = 0; i < contour.size(); i++) {
+					pol.push_back(QPoint(contour[i].x, contour[i].y));
+				}
+				painter.drawPolygon(pol);
+			}
+		}
+		painter.end();
+		image.save("../test/contours_snap_" + QString::number(index) + ".png");
+	}
+	else{
+		//{
+		//	int i = 1;
+		//	painter.setPen(QPen(QColor(rand() % 256, rand() % 256, rand() % 256), 3));
+		//	cv::Point2f p1 = layer.contours_pre[0][i];
+		//	cv::Point2f p2 = layer.contours_pre[0][(i + 1) % layer.contours_pre[0].size()];
+		//	painter.drawLine(p1.x, p1.y, p2.x, p2.y);
+		//}
+		painter.end();
+		image.save("../test/output" + QString::number(index) + ".png");
+	}
 }

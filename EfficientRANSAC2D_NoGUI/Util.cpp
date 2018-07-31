@@ -727,6 +727,16 @@ namespace util {
 		return abs(dist);
 	}
 
+	float distance(const cv::Point2f& a, const cv::Point2f& b, const cv::Point2f& c, const cv::Point2f& d){
+		float dis_a = distance(c, d, a, true);
+		float dis_b = distance(c, d, b, true);
+		float dis_c = distance(a, b, c, true);
+		float dis_d = distance(a, b, d, true);
+		float dis_1 = std::min(dis_a, dis_b);
+		float dis_2 = std::min(dis_c, dis_d);
+		return std::min(dis_1, dis_2);
+	}
+
 	cv::Point2f mirrorPoint(const cv::Point2f& a, const cv::Point2f& b, const cv::Point2f& c){
 		cv::Point2f v = b - a;
 		cv::Point2f n =cv::Point2f(v.y, -v.x);
@@ -746,18 +756,25 @@ namespace util {
 					cv::Point2f src_init_p = init_src_polygon[k];
 					cv::Point2f des_init_p = des_ini_layer_polygons[i][j];
 					float dis_init = cv::norm(src_init_p - des_init_p);
+					//std::cout << "dis_init from " << k << " to " << j << " is " << dis_init << std::endl;
 					cv::Point2f src_p = src_polygon[k];
 					cv::Point2f des_p = des_layer_polygons[i][j];
 					if (dis_init <= dis_threshold)
 						bValid = true;
 					if (bValid){
 						float dis = cv::norm(src_p - des_p);
-						score += (dis_threshold - dis) / dis_threshold;
+						if (dis >= dis_threshold)
+							score += 0.0f;
+						else
+							score += (dis_threshold - dis) / dis_threshold;
 						valid_points++;
 					}
 				}
 			}
 		}
+		//std::cout << "valid_points is " << valid_points << std::endl;
+		if (valid_points == 0)
+			return score;
 		return score / valid_points;
 	}
 
@@ -775,26 +792,36 @@ namespace util {
 					cv::Point2f des_init_start = des_ini_layer_polygons[i][j];
 					cv::Point2f des_init_end = des_ini_layer_polygons[i][(j + 1) % total_seg_des];
 					// distance check
-					float dis_init_start = distance(src_init_start, src_init_end, des_init_start, true);
-					float dis_init_end = distance(src_init_start, src_init_end, des_init_end, true);
-					float dis_init = std::max(dis_init_start, dis_init_end);
-					if (dis_init > dis_threshold)
+					float dis_init = distance(src_init_start, src_init_end, des_init_start, des_init_end);
+					//std::cout << "dis_check ( " << k << " , " << (k + 1) % total_seg_src << ")  to (" << j << ", " << (j + 1) % total_seg_des << ") is "<< dis_init << std::endl;
+					if (dis_init > dis_threshold){
+						//std::cout << "dis_check failed" << std::endl;
 						continue;
+					}
 					// angle check
 					float angle_init = lineLineAngle(src_init_start, src_init_end, des_init_start, des_init_end);
-					if (abs(angle_init) > angle_threshold || abs(180 - angle_init) > angle_threshold)
+					//std::cout << "angle_check ( " << k << " , " << (k + 1) % total_seg_src << ")  to (" << j << ", " << (j + 1) % total_seg_des << ") is " << angle_init << std::endl;
+					if (!(abs(angle_init) <= angle_threshold || abs(180 - angle_init) <= angle_threshold)){
+						//std::cout << "angle_check failed" << std::endl;
 						continue;
+					}
 					cv::Point2f src_start = src_polygon[k];
 					cv::Point2f src_end = src_polygon[(k + 1) % total_seg_src];
 					cv::Point2f des_start = des_layer_polygons[i][j];
 					cv::Point2f des_end = des_layer_polygons[i][(j + 1) % total_seg_des];
 					float angle = lineLineAngle(src_start, src_end, des_start, des_end);
-					angle = std::min(abs(angle_init), abs(180 - angle_init));
-					score += (angle_threshold - angle) / angle_threshold;
+					angle = std::min(abs(angle), abs(180 - angle));
+					if (angle >= angle_threshold)
+						score += 0.0f;
+					else
+						score += (angle_threshold - angle) / angle_threshold;
 					valid_segments++;
 				}
 			}
 		}
+		std::cout << "valid_segments is " << valid_segments << std::endl;
+		if (valid_segments == 0)
+			return score;
 		return score / valid_segments;
 	}
 }
