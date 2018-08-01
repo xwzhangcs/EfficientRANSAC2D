@@ -450,9 +450,9 @@ void MainWindow::onTestReflection(){
 
 void MainWindow::onCombineImages(){
 	QImage overlay;
-	overlay.load("../test/contours_snap_1.png");
+	overlay.load("../test/run_1_contours_1.png");
 	QPixmap base;
-	base.load("../test/contours_snap_0.png");
+	base.load("../test/run_1_contours_0.png");
 	QPainter painter;
 	painter.begin(&base);
 
@@ -606,7 +606,7 @@ void MainWindow::onMultipleRuns(){
 		Regularizer reg;
 		//reg.regularizerForLayers(fileNameList, height_info, tree_info, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle / 180.0 * CV_PI, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
 		//reg.regularizerForLayer("../test/1.png", dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
-		reg.regularizerMultiRunsForLayers(fileNameList, height_info, tree_info, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle / 180.0 * CV_PI, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold / 180.0 * CV_PI, contour_max_error, contour_angle_threshold, dlg.ui.lineEditInputConfig->text());
+		reg.regularizerMultiRunsForLayers(fileNameList, height_info, tree_info, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle / 180.0 * CV_PI, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold / 180.0 * CV_PI, contour_max_error, contour_angle_threshold / 180.0 * CV_PI, dlg.ui.lineEditInputConfig->text());
 
 	}
 }

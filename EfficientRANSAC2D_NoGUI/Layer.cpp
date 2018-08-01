@@ -21,7 +21,7 @@ void Layer::detectContours(){
 void Layer::generateLayer(QString filename, int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, bool bUseSymmetryLineOpt, float iouThreahold){
 	image_name = filename;
 	detectContours();
-
+	std::cout << "filename is " << filename.toUtf8().constData() << std::endl;
 	// detect principal orientation
 	float principal_orientation = OrientationEstimator::estimate(polygons);
 
@@ -42,7 +42,6 @@ void Layer::generateLayer(QString filename, int curve_num_iterations, int curve_
 
 	// generate contours
 	contours.resize(shapes.size());
-	contours_pre.resize(shapes.size());
 	sparse_contours.resize(shapes.size());
 	symmetry_lines.resize(shapes.size());
 
@@ -57,9 +56,8 @@ void Layer::generateLayer(QString filename, int curve_num_iterations, int curve_
 		if (shapes[i].size() == 0)
 			continue;
 		std::sort(shapes[i].begin(), shapes[i].end());
-		//ContourGenerator::generate(polygons[i], shapes[i], contours[i], contour_max_error, contour_angle_threshold);
-		ContourGenerator::generate(polygons[i], shapes[i], contours_pre[i], contour_max_error, contour_angle_threshold);
-		if (contours_pre[i].size() == 0)
+		ContourGenerator::generate(polygons[i], shapes[i], contours[i], contour_max_error, contour_angle_threshold);
+		if (contours[i].size() == 0)
 			continue;
 
 		// shapefit

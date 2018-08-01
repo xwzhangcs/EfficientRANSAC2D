@@ -108,12 +108,12 @@ void ShapeFitLayers::fit(std::vector<Layer>& layers, QString config_file)
 		}
 	}
 	for (int k = 0; k < layers.size(); k++){
-		for (int i = 0; i < layers[k].contours_pre.size(); i++) {
-			for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
-				min_x = std::min(min_x, layers[k].contours_pre[i][j].x);
-				min_y = std::min(min_y, layers[k].contours_pre[i][j].y);
-				max_x = std::max(max_x, layers[k].contours_pre[i][j].x);
-				max_y = std::max(max_y, layers[k].contours_pre[i][j].y);
+		for (int i = 0; i < layers[k].contours.size(); i++) {
+			for (int j = 0; j < layers[k].contours[i].size(); j++){
+				min_x = std::min(min_x, layers[k].contours[i][j].x);
+				min_y = std::min(min_y, layers[k].contours[i][j].y);
+				max_x = std::max(max_x, layers[k].contours[i][j].x);
+				max_y = std::max(max_y, layers[k].contours[i][j].y);
 			}
 		}
 	}
@@ -160,12 +160,12 @@ void ShapeFitLayers::fit(std::vector<Layer>& layers, QString config_file)
 	int total_points = 0;
 	std::vector<layer_polygons> normalized_polygons_init(layers.size());
 	for (int k = 0; k < layers.size(); k++){
-		normalized_polygons_init[k].resize(layers[k].contours_pre.size());
-		for (int i = 0; i < layers[k].contours_pre.size(); i++) {
-			normalized_polygons_init[k][i].resize(layers[k].contours_pre[i].size());
-			total_points += layers[k].contours_pre[i].size();
-			for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
-				normalized_polygons_init[k][i][j] = cv::Point2f((layers[k].contours_pre[i][j].x - min_x) / max_unit, (layers[k].contours_pre[i][j].y - min_y) / max_unit);
+		normalized_polygons_init[k].resize(layers[k].contours.size());
+		for (int i = 0; i < layers[k].contours.size(); i++) {
+			normalized_polygons_init[k][i].resize(layers[k].contours[i].size());
+			total_points += layers[k].contours[i].size();
+			for (int j = 0; j < layers[k].contours[i].size(); j++){
+				normalized_polygons_init[k][i][j] = cv::Point2f((layers[k].contours[i][j].x - min_x) / max_unit, (layers[k].contours[i][j].y - min_y) / max_unit);
 			}
 		}
 	}
@@ -174,9 +174,9 @@ void ShapeFitLayers::fit(std::vector<Layer>& layers, QString config_file)
 	if (bUseRaOpt || bUseParallelOpt){
 		bool bValid = false;
 		for (int k = 0; k < layers.size(); k++){
-			for (int i = 0; i < layers[k].contours_pre.size(); i++){
-				if (layers[k].contours_pre[i].size() != 0){
-					if (validRAorParallel(layers[k].contours_pre[i], bUseRaOpt, angle_threshold_RA, bUseParallelOpt, angle_threshold_parallel)){
+			for (int i = 0; i < layers[k].contours.size(); i++){
+				if (layers[k].contours[i].size() != 0){
+					if (validRAorParallel(layers[k].contours[i], bUseRaOpt, angle_threshold_RA, bUseParallelOpt, angle_threshold_parallel)){
 						bValid = true;
 						break;
 					}
@@ -219,16 +219,22 @@ void ShapeFitLayers::fit(std::vector<Layer>& layers, QString config_file)
 		else
 			find_min_using_approximate_derivatives(dlib::bfgs_search_strategy(), dlib::objective_delta_stop_strategy(1e-7), solver, starting_point, 0, 0.0001);
 		start_index = 0;
+		std::vector<layer_polygons> new_layers_contours;
+		new_layers_contours.resize(layers.size());
 		for (int k = 0; k < layers.size(); k++){
-			layers[k].contours.resize(layers[k].contours_pre.size());
-			for (int i = 0; i < layers[k].contours_pre.size(); i++) {
-				layers[k].contours[i].resize(layers[k].contours_pre[i].size());
-				for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
-					layers[k].contours[i][j].x = starting_point((j + start_index) * 2) * max_unit + min_x;
-					layers[k].contours[i][j].y = starting_point((j + start_index) * 2 + 1) * max_unit + min_y;
+			new_layers_contours[k].resize(layers[k].contours.size());
+			for (int i = 0; i < layers[k].contours.size(); i++) {
+				new_layers_contours[k][i].resize(layers[k].contours[i].size());
+				for (int j = 0; j < layers[k].contours[i].size(); j++){
+					new_layers_contours[k][i][j].x = starting_point((j + start_index) * 2) * max_unit + min_x;
+					new_layers_contours[k][i][j].y = starting_point((j + start_index) * 2 + 1) * max_unit + min_y;
 				}
-				start_index += layers[k].contours_pre[i].size();
+				start_index += layers[k].contours[i].size();
 			}
+		}
+		// reset contours
+		for (int k = 0; k < layers.size(); k++){
+			layers[k].contours = new_layers_contours[k];
 		}
 	}
 	catch (char* ex) {

@@ -43,7 +43,7 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 	doc.Parse(in.readAll().toUtf8().constData());
 	bUseIntra = doc["UseIntra"].GetBool();
 	bUseInter = doc["UseInter"].GetBool();
-	if (bUseIntra){
+	/*if (bUseIntra){
 		rapidjson::Value& algs = doc["IntraOpt"];
 		//ra
 		rapidjson::Value& algs_ra = algs["RA"];
@@ -63,7 +63,7 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 		rapidjson::Value& algs_accuracy = algs["Accuracy"];
 		bUseAccuracyOpt = algs_accuracy["UseOpt"].GetBool();
 		accuracyWeight = algs_accuracy["Weight"].GetFloat();
-	}
+	}*/
 	if (bUseInter){
 		rapidjson::Value& algs = doc["InterOpt"];
 		// point snap
@@ -79,19 +79,13 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 		segWeight = algs_seg["Weight"].GetFloat();
 	}
 	file.close();
-	if (!bUseIntra && !bUseInter){
+	if (!bUseInter){
 		return;
 	}
-	//{
-	//	std::cout << "bUseRa " << config->bUseRaOpt << " ra angle is " << config->angle_threshold_RA << " ra weight is " << config->raWeight << std::endl;
-	//	std::cout << "bUseParallel " << config->bUseParallelOpt << " Parallel angle is " << config->angle_threshold_parallel << " Parallel weight is " << config->parallelWeight << std::endl;
-	//	std::cout << "bUseSymmetry " << config->bUseSymmetryLineOpt << " Symmetry weight is " << config->symmetryWeight << std::endl;
-	//	std::cout << "bUseAccuracy " << config->bUseAccuracyOpt << " Accuracy weight is " << config->accuracyWeight << std::endl;
-	//}
-	//{
-	//	std::cout << "bUsePoint " << config->bUsePointSnapOpt << " Point threshold is " << config->pointDisThreshold << " Point weight is " << config->pointWeight << std::endl;
-	//	std::cout << "bUseSeg " << config->bUseSegSnapOpt << " seg angle is " << config->segAngleThreshold << " seg weight is " << config->segWeight << std::endl;
-	//}
+	{
+		std::cout << "bUsePoint " << bUsePointSnapOpt << " Point threshold is " << pointDisThreshold << " Point weight is " << pointWeight << std::endl;
+		std::cout << "bUseSeg " << bUseSegSnapOpt << " seg angle is " << segAngleThreshold << " seg weight is " << segWeight << std::endl;
+	}
 	float min_x = std::numeric_limits<float>::max();
 	float min_y = std::numeric_limits<float>::max();
 	float max_x = -std::numeric_limits<float>::max();
@@ -107,12 +101,12 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 		}
 	}
 	for (int k = 0; k < layers.size(); k++){
-		for (int i = 0; i < layers[k].contours_pre.size(); i++) {
-			for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
-				min_x = std::min(min_x, layers[k].contours_pre[i][j].x);
-				min_y = std::min(min_y, layers[k].contours_pre[i][j].y);
-				max_x = std::max(max_x, layers[k].contours_pre[i][j].x);
-				max_y = std::max(max_y, layers[k].contours_pre[i][j].y);
+		for (int i = 0; i < layers[k].contours.size(); i++) {
+			for (int j = 0; j < layers[k].contours[i].size(); j++){
+				min_x = std::min(min_x, layers[k].contours[i][j].x);
+				min_y = std::min(min_y, layers[k].contours[i][j].y);
+				max_x = std::max(max_x, layers[k].contours[i][j].x);
+				max_y = std::max(max_y, layers[k].contours[i][j].y);
 			}
 		}
 	}
@@ -161,29 +155,13 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 
 	int total_points = 0;
 	std::vector<layer_polygons> normalized_polygons_init(layers.size());
-	if (bUseIntra){
-		std::cout << "use contours!!!!" << std::endl;
-		for (int k = 0; k < layers.size(); k++){
-			normalized_polygons_init[k].resize(layers[k].contours.size());
-			for (int i = 0; i < layers[k].contours.size(); i++) {
-				normalized_polygons_init[k][i].resize(layers[k].contours[i].size());
-				total_points += layers[k].contours[i].size();
-				for (int j = 0; j < layers[k].contours[i].size(); j++){
-					normalized_polygons_init[k][i][j] = cv::Point2f((layers[k].contours[i][j].x - min_x) / max_unit, (layers[k].contours[i][j].y - min_y) / max_unit);
-				}
-			}
-		}
-	}
-	else{
-		std::cout << "use contours_pre!!!!" << std::endl;
-		for (int k = 0; k < layers.size(); k++){
-			normalized_polygons_init[k].resize(layers[k].contours_pre.size());
-			for (int i = 0; i < layers[k].contours_pre.size(); i++) {
-				normalized_polygons_init[k][i].resize(layers[k].contours_pre[i].size());
-				total_points += layers[k].contours_pre[i].size();
-				for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
-					normalized_polygons_init[k][i][j] = cv::Point2f((layers[k].contours_pre[i][j].x - min_x) / max_unit, (layers[k].contours_pre[i][j].y - min_y) / max_unit);
-				}
+	for (int k = 0; k < layers.size(); k++){
+		normalized_polygons_init[k].resize(layers[k].contours.size());
+		for (int i = 0; i < layers[k].contours.size(); i++) {
+			normalized_polygons_init[k][i].resize(layers[k].contours[i].size());
+			total_points += layers[k].contours[i].size();
+			for (int j = 0; j < layers[k].contours[i].size(); j++){
+				normalized_polygons_init[k][i][j] = cv::Point2f((layers[k].contours[i][j].x - min_x) / max_unit, (layers[k].contours[i][j].y - min_y) / max_unit);
 			}
 		}
 	}
@@ -316,31 +294,22 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 		else
 			find_min_using_approximate_derivatives(dlib::bfgs_search_strategy(), dlib::objective_delta_stop_strategy(1e-7), solver, starting_point, 0, 0.0001);
 		start_index = 0;
-		if (bUseIntra){
-			for (int k = 0; k < layers.size(); k++){
-				layers[k].contours_snap.resize(layers[k].contours.size());
-				for (int i = 0; i < layers[k].contours.size(); i++) {
-					layers[k].contours_snap[i].resize(layers[k].contours[i].size());
-					for (int j = 0; j < layers[k].contours[i].size(); j++){
-						layers[k].contours_snap[i][j].x = starting_point((j + start_index) * 2) * max_unit + min_x;
-						layers[k].contours_snap[i][j].y = starting_point((j + start_index) * 2 + 1) * max_unit + min_y;
-					}
-					start_index += layers[k].contours[i].size();
+		std::vector<layer_polygons> new_layers_contours;
+		new_layers_contours.resize(layers.size());
+		for (int k = 0; k < layers.size(); k++){
+			new_layers_contours[k].resize(layers[k].contours.size());
+			for (int i = 0; i < layers[k].contours.size(); i++) {
+				new_layers_contours[k][i].resize(layers[k].contours[i].size());
+				for (int j = 0; j < layers[k].contours[i].size(); j++){
+					new_layers_contours[k][i][j].x = starting_point((j + start_index) * 2) * max_unit + min_x;
+					new_layers_contours[k][i][j].y = starting_point((j + start_index) * 2 + 1) * max_unit + min_y;
 				}
+				start_index += layers[k].contours[i].size();
 			}
 		}
-		else{
-			for (int k = 0; k < layers.size(); k++){
-				layers[k].contours_snap.resize(layers[k].contours_pre.size());
-				for (int i = 0; i < layers[k].contours_pre.size(); i++) {
-					layers[k].contours_snap[i].resize(layers[k].contours_pre[i].size());
-					for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
-						layers[k].contours_snap[i][j].x = starting_point((j + start_index) * 2) * max_unit + min_x;
-						layers[k].contours_snap[i][j].y = starting_point((j + start_index) * 2 + 1) * max_unit + min_y;
-					}
-					start_index += layers[k].contours_pre[i].size();
-				}
-			}
+		// reset contours
+		for (int k = 0; k < layers.size(); k++){
+			layers[k].contours = new_layers_contours[k];
 		}
 	}
 	catch (char* ex) {

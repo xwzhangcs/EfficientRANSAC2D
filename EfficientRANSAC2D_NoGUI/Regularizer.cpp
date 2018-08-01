@@ -86,7 +86,7 @@ void Regularizer::regularizerForLayers(const std::vector<QString> &fileNameList,
 	createLayers(fileNameList, height_infoint, tree_info, input_layers, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, contour_max_error, contour_angle_threshold, bUseSymmetryLineOpt, iouThreahold);
 	generateContoursLayers(input_layers, config_file);
 	for (int i = 0; i < input_layers.size(); i++){
-		saveImage(input_layers[i], i, 2);
+		saveImage(input_layers[i], i, 1);
 		//std::cout << "layer " << i << " top height is " << input_layers[i].top_height << " bot height is " << input_layers[i].bottom_height << std::endl;
 	}
 	// verify point opt
@@ -177,7 +177,7 @@ void Regularizer::regularizerForLayers(const std::vector<QString> &fileNameList,
 void Regularizer::regularizerMultiRunsForLayers(const std::vector<QString> &fileNameList, const std::vector<std::pair<float, float>>& height_info, const std::vector<std::pair<std::vector<int>, std::vector<int>>>& tree_info, int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, QString config_file){
 	std::vector<Layer> input_layers;
 	// create layers
-	createLayers(fileNameList, height_info, tree_info, input_layers, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, contour_max_error, contour_angle_threshold, false, 90);
+	createLayers(fileNameList, height_info, tree_info, input_layers, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, contour_max_error, contour_angle_threshold, true, 90);
 	// check the number of runs
 	QFile file(config_file);
 	if (!file.open(QIODevice::ReadOnly)) {
@@ -195,20 +195,36 @@ void Regularizer::regularizerMultiRunsForLayers(const std::vector<QString> &file
 		QString current_config_version = "config" + QString::number(i);
 		QString current_config_file = doc[current_config_version.toUtf8().constData()].GetString();
 		std::cout << "current_config_file is " << current_config_file.toUtf8().constData() << std::endl;
-		{
-			QFile file(current_config_file);
-			if (!file.open(QIODevice::ReadOnly)) {
-				std::cerr << "File was not readable: " << std::endl;
-				return;
-			}
-			QTextStream in(&file);
-			rapidjson::Document doc;
-			doc.Parse(in.readAll().toUtf8().constData());
-			bool test = doc["UseIntra"].GetBool();
-			std::cout << "intra is " << test << std::endl;
-			file.close();
+		QFile file(current_config_file);
+		if (!file.open(QIODevice::ReadOnly)) {
+			std::cerr << "File was not readable: " << std::endl;
+			return;
 		}
-
+		QTextStream in(&file);
+		rapidjson::Document doc;
+		doc.Parse(in.readAll().toUtf8().constData());
+		bool bUseIntra = doc["UseIntra"].GetBool();
+		bool bUseInter = doc["UseInter"].GetBool();
+		std::cout << "intra is " << bUseIntra << ", inter is " << bUseInter << std::endl;
+		file.close();
+		if (bUseIntra){
+			for (int j = 0; j < input_layers.size(); j++){
+				generateContoursLayer(input_layers[j], current_config_file);
+				post_processing(input_layers[j], 10);
+				saveImage(input_layers[j], j, i);
+			}
+		}
+		else if (bUseInter){
+			ShapeFitLayersInter::fit(input_layers, current_config_file);
+			for (int j = 0; j < input_layers.size(); j++){
+				post_processing(input_layers[j], 10);
+				saveImage(input_layers[j], j, i);
+			}
+		}
+		else{
+			// do nothing
+		}
+		
 	}
 	file.close();
 
@@ -235,8 +251,8 @@ void Regularizer::generateContoursLayer(Layer& input_layer, QString config_file)
 
 	// if all contours sizes are 0
 	bool bValidLayer = false;
-	for (int i = 0; i < input_layer.contours_pre.size(); i++){
-		if (input_layer.contours_pre[i].size() != 0){
+	for (int i = 0; i < input_layer.contours.size(); i++){
+		if (input_layer.contours[i].size() != 0){
 			bValidLayer = true;
 			break;
 		}
@@ -293,13 +309,12 @@ void Regularizer::generateContoursLayer(Layer& input_layer, QString config_file)
 		file.close();
 	}
 	else{
-		input_layer.contours = input_layer.contours_pre;
 		file.close();
 		return;
 	}
 	// Here we have all original polygons, all initial points and all symmetry lines
 	// We call optimization below
-	input_layer.contours = ShapeFitLayer::fit(input_layer.sparse_contours, input_layer.contours_pre, bUseRaOpt, raThreahold, raWeight, bUseParallelOpt, parallelThreahold, parallelWeight, bUseSymmetryLineOpt, input_layer.symmetry_lines, symmetryWeight, bUseAccuracyOpt, accuracyWeight);
+	input_layer.contours = ShapeFitLayer::fit(input_layer.sparse_contours, input_layer.contours, bUseRaOpt, raThreahold, raWeight, bUseParallelOpt, parallelThreahold, parallelWeight, bUseSymmetryLineOpt, input_layer.symmetry_lines, symmetryWeight, bUseAccuracyOpt, accuracyWeight);
 	for (int i = 0; i < input_layer.contours.size(); i++){
 		////////// DEBUG //////////
 		// calculate IOU
@@ -395,58 +410,26 @@ void Regularizer::saveImage(Layer & layer, int index, int level){
 			painter.drawPolygon(pgon);
 		}
 	}
-	if (level == 0){
-		if (layer.contours_pre.size() != 0){
-			for (auto& contour : layer.contours_pre) {
-				painter.setPen(QPen(QColor(0, 0, 255), 3));
-				QPolygon pol;
-				for (int i = 0; i < contour.size(); i++) {
-					pol.push_back(QPoint(contour[i].x, contour[i].y));
-				}
-				painter.drawPolygon(pol);
+
+	if (layer.contours.size() != 0){
+		for (auto& contour : layer.contours) {
+			//painter.setPen(QPen(QColor(255, 0, 0), 3));
+			painter.setPen(QPen(QColor(0, rand() % 256, rand() % 256), 3));
+			QPolygon pol;
+			for (int i = 0; i < contour.size(); i++) {
+				pol.push_back(QPoint(contour[i].x, contour[i].y));
 			}
+			painter.drawPolygon(pol);
 		}
-		painter.end();
-		image.save("../test/contours_pre_" + QString::number(index) + ".png");
 	}
-	else if (level == 1){
-		if (layer.contours.size() != 0){
-			for (auto& contour : layer.contours) {
-				//painter.setPen(QPen(QColor(255, 0, 0), 3));
-				painter.setPen(QPen(QColor(0, rand() % 256, rand() % 256), 3));
-				QPolygon pol;
-				for (int i = 0; i < contour.size(); i++) {
-					pol.push_back(QPoint(contour[i].x, contour[i].y));
-				}
-				painter.drawPolygon(pol);
-			}
-		}
-		painter.end();
-		image.save("../test/contours_" + QString::number(index) + ".png");
-	}
-	else if (level == 2){
-		if (layer.contours_snap.size() != 0){
-			for (auto& contour : layer.contours_snap) {
-				painter.setPen(QPen(QColor(0, rand() % 256, rand() % 256), 3));
-				QPolygon pol;
-				for (int i = 0; i < contour.size(); i++) {
-					pol.push_back(QPoint(contour[i].x, contour[i].y));
-				}
-				painter.drawPolygon(pol);
-			}
-		}
-		painter.end();
-		image.save("../test/contours_snap_" + QString::number(index) + ".png");
-	}
-	else{
-		//{
-		//	int i = 1;
-		//	painter.setPen(QPen(QColor(rand() % 256, rand() % 256, rand() % 256), 3));
-		//	cv::Point2f p1 = layer.contours_pre[0][i];
-		//	cv::Point2f p2 = layer.contours_pre[0][(i + 1) % layer.contours_pre[0].size()];
-		//	painter.drawLine(p1.x, p1.y, p2.x, p2.y);
-		//}
-		painter.end();
-		image.save("../test/output_" + QString::number(index) + ".png");
-	}
+	painter.end();
+	image.save("../test/run_" + QString::number(level) + "_contours_" + QString::number(index) + ".png");
+
+	//{
+	//	int i = 1;
+	//	painter.setPen(QPen(QColor(rand() % 256, rand() % 256, rand() % 256), 3));
+	//	cv::Point2f p1 = layer.contours_pre[0][i];
+	//	cv::Point2f p2 = layer.contours_pre[0][(i + 1) % layer.contours_pre[0].size()];
+	//	painter.drawLine(p1.x, p1.y, p2.x, p2.y);
+	//}
 }

@@ -17,8 +17,6 @@ public:
 	std::vector<util::Polygon> polygons;
 	std::vector<std::vector<std::pair<int, std::shared_ptr<efficient_ransac::PrimitiveShape>>>> shapes;
 	std::vector<std::vector<cv::Point2f>> contours;
-	std::vector<std::vector<cv::Point2f>> contours_pre;
-	std::vector<std::vector<cv::Point2f>> contours_snap;
 	std::vector<std::vector<cv::Point2f>> sparse_contours;
 	std::vector<std::vector<cv::Point2f>> symmetry_lines;
 	float top_height;
