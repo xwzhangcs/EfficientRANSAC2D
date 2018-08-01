@@ -174,6 +174,46 @@ void Regularizer::regularizerForLayers(const std::vector<QString> &fileNameList,
 	}*/
 }
 
+void Regularizer::regularizerMultiRunsForLayers(const std::vector<QString> &fileNameList, const std::vector<std::pair<float, float>>& height_info, const std::vector<std::pair<std::vector<int>, std::vector<int>>>& tree_info, int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, QString config_file){
+	std::vector<Layer> input_layers;
+	// create layers
+	createLayers(fileNameList, height_info, tree_info, input_layers, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, contour_max_error, contour_angle_threshold, false, 90);
+	// check the number of runs
+	QFile file(config_file);
+	if (!file.open(QIODevice::ReadOnly)) {
+		std::cerr << "File was not readable: " << std::endl;
+		return;
+	}
+	QTextStream in(&file);
+	rapidjson::Document doc;
+	doc.Parse(in.readAll().toUtf8().constData());
+	int num_runs = 0;
+	num_runs = doc["number"].GetInt();
+	std::cout << "num_runs is " << num_runs << std::endl;
+	//
+	for (int i = 1; i <= num_runs; i++){
+		QString current_config_version = "config" + QString::number(i);
+		QString current_config_file = doc[current_config_version.toUtf8().constData()].GetString();
+		std::cout << "current_config_file is " << current_config_file.toUtf8().constData() << std::endl;
+		{
+			QFile file(current_config_file);
+			if (!file.open(QIODevice::ReadOnly)) {
+				std::cerr << "File was not readable: " << std::endl;
+				return;
+			}
+			QTextStream in(&file);
+			rapidjson::Document doc;
+			doc.Parse(in.readAll().toUtf8().constData());
+			bool test = doc["UseIntra"].GetBool();
+			std::cout << "intra is " << test << std::endl;
+			file.close();
+		}
+
+	}
+	file.close();
+
+}
+
 void Regularizer::createLayer(QString fileName, Layer & layer, int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, bool bUseSymmetryLineOpt, float iouThreahold){
 	layer.generateLayer(fileName, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, contour_max_error, contour_angle_threshold, bUseSymmetryLineOpt, iouThreahold);
 }

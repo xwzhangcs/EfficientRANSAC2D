@@ -11,6 +11,7 @@ MultiRunsDialog::MultiRunsDialog(QWidget *parent)
 	connect(ui.pushButtonInput, SIGNAL(clicked()), this, SLOT(onGetInputPath())); 
 	connect(ui.pushButtonOutput, SIGNAL(clicked()), this, SLOT(onGetOutputPath()));
 	connect(ui.pushButtonInputConfig, SIGNAL(clicked()), this, SLOT(onGetConfigFile()));
+	connect(ui.pushButtonInputDetect, SIGNAL(clicked()), this, SLOT(onGetDetectFile()));
 }
 
 MultiRunsDialog::~MultiRunsDialog()
@@ -35,6 +36,13 @@ void MultiRunsDialog::onGetConfigFile(){
 	QString dir = QFileDialog::getOpenFileName(this, tr("Load config file..."), ui.lineEditInputConfig->text(), tr("Config file (*.json)"));
 	if (!dir.isEmpty()) {
 		ui.lineEditInputConfig->setText(dir);
+	}
+}
+
+void MultiRunsDialog::onGetDetectFile(){
+	QString dir = QFileDialog::getOpenFileName(this, tr("Load config file..."), ui.lineEditInputDetect->text(), tr("Config file (*.json)"));
+	if (!dir.isEmpty()) {
+		ui.lineEditInputDetect->setText(dir);
 	}
 }
 

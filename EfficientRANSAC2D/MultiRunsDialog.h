@@ -18,6 +18,7 @@ public slots:
 	void onGetInputPath();
 	void onGetOutputPath();
 	void onGetConfigFile();
+	void onGetDetectFile();
 	void onOK();
 	void onCancel();
 };

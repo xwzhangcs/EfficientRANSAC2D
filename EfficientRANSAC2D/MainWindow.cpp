@@ -476,9 +476,138 @@ void MainWindow::onCombineImages(){
 void MainWindow::onMultipleRuns(){
 	MultiRunsDialog dlg;
 	if (dlg.exec()) {
-		std::cout << "input dir is " << dlg.ui.lineEditInput->text().toUtf8().constData() << std::endl;
-		std::cout << "output dir is " << dlg.ui.lineEditOutput->text().toUtf8().constData() << std::endl;
-		std::cout << "config file is " << dlg.ui.lineEditInputConfig->text().toUtf8().constData() << std::endl;
+		// read files one by one
+		QString input_dir = dlg.ui.lineEditInput->text();
+		QString output_dir = dlg.ui.lineEditOutput->text();
+		if (output_dir.isEmpty() || input_dir.isEmpty()){
+			std::cout << "The path is empty!!" << std::endl;
+			return;
+		}
+		QDir dir(input_dir);
+		int index = 0;
+		int num_files = 0;
+		QString file_path;
+		foreach(QFileInfo item, dir.entryInfoList())
+		{
+			if (item.isFile()){
+				num_files++;
+			}
+		}
+
+		// read layer images
+		std::vector<QString> fileNameList;
+		fileNameList.resize(num_files - 2);
+		for (int i = 0; i < num_files - 2; i++){
+			QString filename = input_dir + "/" + QString::number(i) + ".png";
+			fileNameList[i] = filename;
+		}
+		std::vector<std::pair<float, float>> height_info;
+		height_info.resize(num_files - 2);
+		// read height info
+		QFile height_info_file = input_dir + "/info_height.txt";
+		if (!height_info_file.open(QIODevice::ReadOnly)) {
+			std::cout << "read height info file error" << std::endl;
+			return;
+		}
+		QTextStream in(&height_info_file);
+		for (int i = 0; i < num_files - 2; i++){
+			QString line = in.readLine();
+			QStringList fields = line.split(",");
+			height_info[i] = std::make_pair(fields.at(0).toFloat(), fields.at(1).toFloat());
+		}
+		height_info_file.close();
+		// read tree info
+		std::vector<std::pair<int, int>> tree_info_tmp;
+		QFile tree_info_file = input_dir + "/info_tree.txt";
+		if (!tree_info_file.open(QIODevice::ReadOnly)) {
+			std::cout << "read tree info file error" << std::endl;
+			return;
+		}
+		QTextStream in_tree_info(&tree_info_file);
+		while (!in_tree_info.atEnd()){
+			QString line = in_tree_info.readLine();
+			QStringList fields = line.split(",");
+			//std::cout << "mother is " << fields.at(0).toInt() << ", child is " << fields.at(1).toInt() << std::endl;
+			tree_info_tmp.push_back(std::make_pair(fields.at(0).toInt(), fields.at(1).toInt()));
+		}
+		tree_info_file.close();
+		std::vector<std::pair<std::vector<int>, std::vector<int>>> tree_info;
+		tree_info.resize(num_files - 2);
+		for (int node = 0; node < num_files - 2; node++){
+			for (int i = 0; i < tree_info_tmp.size(); i++){
+				if (tree_info_tmp[i].first == node){
+					tree_info[node].second.push_back(tree_info_tmp[i].second);
+				}
+				if (tree_info_tmp[i].second == node){
+					tree_info[node].first.push_back(tree_info_tmp[i].first);
+				}
+			}
+		}
+
+		// read detect file
+		int curve_num_iterations = 0;
+		int curve_min_points = 0; 
+		float curve_max_error_ratio_to_radius = 0.0f; 
+		float curve_cluster_epsilon = 0.0f;
+		float curve_min_angle = 0.0f;
+		float curve_min_radius = 0.0f; 
+		float curve_max_radius = 0.0f;
+
+		int line_num_iterations = 0; 
+		int line_min_points  = 0; 
+		float line_max_error = 0.0f; 
+		float line_cluster_epsilon = 0.0f; 
+		float line_min_length = 0.0f; 
+		float line_angle_threshold = 0.0f;
+
+		float contour_max_error = 0.0f;
+		float contour_angle_threshold = 0.0f;
+
+		QFile file(dlg.ui.lineEditInputDetect->text());
+		if (file.open(QIODevice::ReadOnly)) {
+			QTextStream in(&file);
+			rapidjson::Document doc;
+			doc.Parse(in.readAll().toUtf8().constData());
+			//curve
+			rapidjson::Value& algs_curve = doc["Curve"];
+			curve_num_iterations = algs_curve["iterations"].GetInt();
+			curve_min_points = algs_curve["min_points"].GetInt();
+			curve_max_error_ratio_to_radius = algs_curve["max_error_ratio_to_radius"].GetFloat();
+			curve_cluster_epsilon = algs_curve["cluster_epsilon"].GetFloat();
+			curve_min_angle = algs_curve["min_angle"].GetFloat();
+			curve_min_radius = algs_curve["min_radius"].GetFloat();
+			curve_max_radius = algs_curve["max_radius"].GetFloat();
+			//line
+			rapidjson::Value& algs_line = doc["Line"];
+			line_num_iterations = algs_line["iterations"].GetInt();
+			line_min_points = algs_line["min_points"].GetInt();
+			line_max_error = algs_line["max_error"].GetFloat();
+			line_cluster_epsilon = algs_line["cluster_epsilon"].GetFloat();
+			line_min_length = algs_line["min_length"].GetFloat();
+			line_angle_threshold = algs_line["angle_threshold"].GetFloat();
+			//contour
+			rapidjson::Value& algs_contour = doc["Contour"];
+			contour_max_error = algs_contour["max_error"].GetFloat();
+			contour_angle_threshold = algs_contour["angle_threshold"].GetFloat();
+			/*std::cout << "curve_num_iterations is " << curve_num_iterations << std::endl;
+			std::cout << "curve_max_error_ratio_to_radius is " << curve_max_error_ratio_to_radius << std::endl;
+			std::cout << "curve_min_radius is " << curve_min_radius << std::endl;
+			std::cout << "line_num_iterations is " << line_num_iterations << std::endl;
+			std::cout << "line_max_error is " << line_max_error << std::endl;
+			std::cout << "line_min_length is " << line_min_length << std::endl;
+			std::cout << "contour_max_error is " << contour_max_error << std::endl;*/
+		}
+		else{
+			std::cerr << "File was not readable: " << std::endl;
+			return;
+		}
+
+		// call regularizer
+		Regularizer reg;
+		//reg.regularizerForLayers(fileNameList, height_info, tree_info, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle / 180.0 * CV_PI, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
+		//reg.regularizerForLayer("../test/1.png", dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
+		reg.regularizerMultiRunsForLayers(fileNameList, height_info, tree_info, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle / 180.0 * CV_PI, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold / 180.0 * CV_PI, contour_max_error, contour_angle_threshold, dlg.ui.lineEditInputConfig->text());
+
 	}
 }
 

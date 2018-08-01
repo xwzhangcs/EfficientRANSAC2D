@@ -35,6 +35,9 @@ public:
     QLineEdit *lineEditInputConfig;
     QPushButton *pushButtonInputConfig;
     QLabel *label_23;
+    QPushButton *pushButtonInputDetect;
+    QLineEdit *lineEditInputDetect;
+    QLabel *label_24;
     QPushButton *pushButtonCancel;
     QPushButton *pushButtonOK;
 
@@ -42,43 +45,52 @@ public:
     {
         if (MultiRunsDialog->objectName().isEmpty())
             MultiRunsDialog->setObjectName(QStringLiteral("MultiRunsDialog"));
-        MultiRunsDialog->resize(321, 175);
+        MultiRunsDialog->resize(321, 210);
         groupBox_4 = new QGroupBox(MultiRunsDialog);
         groupBox_4->setObjectName(QStringLiteral("groupBox_4"));
-        groupBox_4->setGeometry(QRect(13, 10, 291, 111));
+        groupBox_4->setGeometry(QRect(13, 10, 291, 141));
         label_21 = new QLabel(groupBox_4);
         label_21->setObjectName(QStringLiteral("label_21"));
         label_21->setGeometry(QRect(10, 20, 47, 13));
         label_22 = new QLabel(groupBox_4);
         label_22->setObjectName(QStringLiteral("label_22"));
-        label_22->setGeometry(QRect(10, 81, 47, 13));
+        label_22->setGeometry(QRect(10, 106, 47, 13));
         lineEditInput = new QLineEdit(groupBox_4);
         lineEditInput->setObjectName(QStringLiteral("lineEditInput"));
         lineEditInput->setGeometry(QRect(57, 20, 161, 20));
         lineEditOutput = new QLineEdit(groupBox_4);
         lineEditOutput->setObjectName(QStringLiteral("lineEditOutput"));
-        lineEditOutput->setGeometry(QRect(57, 81, 161, 20));
+        lineEditOutput->setGeometry(QRect(57, 106, 161, 20));
         pushButtonInput = new QPushButton(groupBox_4);
         pushButtonInput->setObjectName(QStringLiteral("pushButtonInput"));
         pushButtonInput->setGeometry(QRect(227, 20, 51, 23));
         pushButtonOutput = new QPushButton(groupBox_4);
         pushButtonOutput->setObjectName(QStringLiteral("pushButtonOutput"));
-        pushButtonOutput->setGeometry(QRect(227, 81, 51, 23));
+        pushButtonOutput->setGeometry(QRect(227, 106, 51, 23));
         lineEditInputConfig = new QLineEdit(groupBox_4);
         lineEditInputConfig->setObjectName(QStringLiteral("lineEditInputConfig"));
-        lineEditInputConfig->setGeometry(QRect(57, 50, 161, 20));
+        lineEditInputConfig->setGeometry(QRect(57, 75, 161, 20));
         pushButtonInputConfig = new QPushButton(groupBox_4);
         pushButtonInputConfig->setObjectName(QStringLiteral("pushButtonInputConfig"));
-        pushButtonInputConfig->setGeometry(QRect(227, 50, 51, 23));
+        pushButtonInputConfig->setGeometry(QRect(227, 75, 51, 23));
         label_23 = new QLabel(groupBox_4);
         label_23->setObjectName(QStringLiteral("label_23"));
-        label_23->setGeometry(QRect(10, 50, 47, 13));
+        label_23->setGeometry(QRect(10, 75, 47, 13));
+        pushButtonInputDetect = new QPushButton(groupBox_4);
+        pushButtonInputDetect->setObjectName(QStringLiteral("pushButtonInputDetect"));
+        pushButtonInputDetect->setGeometry(QRect(227, 48, 51, 23));
+        lineEditInputDetect = new QLineEdit(groupBox_4);
+        lineEditInputDetect->setObjectName(QStringLiteral("lineEditInputDetect"));
+        lineEditInputDetect->setGeometry(QRect(57, 48, 161, 20));
+        label_24 = new QLabel(groupBox_4);
+        label_24->setObjectName(QStringLiteral("label_24"));
+        label_24->setGeometry(QRect(10, 48, 47, 13));
         pushButtonCancel = new QPushButton(MultiRunsDialog);
         pushButtonCancel->setObjectName(QStringLiteral("pushButtonCancel"));
-        pushButtonCancel->setGeometry(QRect(205, 134, 91, 31));
+        pushButtonCancel->setGeometry(QRect(205, 161, 91, 31));
         pushButtonOK = new QPushButton(MultiRunsDialog);
         pushButtonOK->setObjectName(QStringLiteral("pushButtonOK"));
-        pushButtonOK->setGeometry(QRect(75, 134, 91, 31));
+        pushButtonOK->setGeometry(QRect(75, 161, 91, 31));
 
         retranslateUi(MultiRunsDialog);
 
@@ -94,7 +106,9 @@ public:
         pushButtonInput->setText(QApplication::translate("MultiRunsDialog", "...", Q_NULLPTR));
         pushButtonOutput->setText(QApplication::translate("MultiRunsDialog", "...", Q_NULLPTR));
         pushButtonInputConfig->setText(QApplication::translate("MultiRunsDialog", "...", Q_NULLPTR));
-        label_23->setText(QApplication::translate("MultiRunsDialog", "Config:", Q_NULLPTR));
+        label_23->setText(QApplication::translate("MultiRunsDialog", "Opt:", Q_NULLPTR));
+        pushButtonInputDetect->setText(QApplication::translate("MultiRunsDialog", "...", Q_NULLPTR));
+        label_24->setText(QApplication::translate("MultiRunsDialog", "Detect:", Q_NULLPTR));
         pushButtonCancel->setText(QApplication::translate("MultiRunsDialog", "Cancel", Q_NULLPTR));
         pushButtonOK->setText(QApplication::translate("MultiRunsDialog", "OK", Q_NULLPTR));
     } // retranslateUi
