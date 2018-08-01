@@ -773,8 +773,12 @@ namespace util {
 			}
 		}
 		//std::cout << "valid_points is " << valid_points << std::endl;
-		if (valid_points == 0)
+		if (valid_points == 0){
+			std::cout << "hello1" << std::endl;
 			return score;
+		}
+		std::cout << "--score is " << score<<std::endl;
+		std::cout << "--valid_points is " << valid_points << std::endl;
 		return score / valid_points;
 	}
 

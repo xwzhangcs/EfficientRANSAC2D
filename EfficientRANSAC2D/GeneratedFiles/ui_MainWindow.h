@@ -41,6 +41,7 @@ public:
     QAction *actionDetectSymmetryLine;
     QAction *actionLayers;
     QAction *actionCombineImages;
+    QAction *actionMulti_Runs;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
@@ -93,6 +94,8 @@ public:
         actionLayers->setObjectName(QStringLiteral("actionLayers"));
         actionCombineImages = new QAction(MainWindowClass);
         actionCombineImages->setObjectName(QStringLiteral("actionCombineImages"));
+        actionMulti_Runs = new QAction(MainWindowClass);
+        actionMulti_Runs->setObjectName(QStringLiteral("actionMulti_Runs"));
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         MainWindowClass->setCentralWidget(centralWidget);
@@ -132,6 +135,7 @@ public:
         menuTest->addAction(actionReflection);
         menuTest->addAction(actionLayers);
         menuTest->addAction(actionCombineImages);
+        menuTest->addAction(actionMulti_Runs);
 
         retranslateUi(MainWindowClass);
 
@@ -157,6 +161,7 @@ public:
         actionDetectSymmetryLine->setText(QApplication::translate("MainWindowClass", "Detect Symmetry Line", Q_NULLPTR));
         actionLayers->setText(QApplication::translate("MainWindowClass", "Use Layers", Q_NULLPTR));
         actionCombineImages->setText(QApplication::translate("MainWindowClass", "Combine images", Q_NULLPTR));
+        actionMulti_Runs->setText(QApplication::translate("MainWindowClass", "Multiple Runs", Q_NULLPTR));
         menuFile->setTitle(QApplication::translate("MainWindowClass", "File", Q_NULLPTR));
         menuTool->setTitle(QApplication::translate("MainWindowClass", "Tool", Q_NULLPTR));
         menuTest->setTitle(QApplication::translate("MainWindowClass", "Test", Q_NULLPTR));

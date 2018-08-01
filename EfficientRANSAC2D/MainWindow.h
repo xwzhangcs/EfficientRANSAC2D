@@ -27,4 +27,5 @@ public slots:
 	void onTestReflection();
 	void onTestUseLayers();
 	void onCombineImages();
+	void onMultipleRuns();
 };

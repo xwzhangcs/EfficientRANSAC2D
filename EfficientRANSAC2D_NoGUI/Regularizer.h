@@ -15,5 +15,6 @@ public:
 	void generateContoursLayer(Layer& input_layer, QString config_file);
 	void generateContoursLayers(std::vector<Layer>& input_layers, QString config_file);
 	void saveImage(Layer & layer, int index, int level);
+	void post_processing(Layer & layer, float angle_threshold);
 	//void saveImages();
 };

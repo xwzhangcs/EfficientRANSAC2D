@@ -73,7 +73,7 @@ class ShapeFitLayer {
 						// symmetry opt function
 						if (bUseSymmetryLineOpt){
 							if (symmetry_lines[i].size() != 0){
-								std::cout << "symmetry polygon is " << i << std::endl;
+								//std::cout << "symmetry polygon is " << i << std::endl;
 								std::vector<cv::Point2f> polygon_symmetry;
 								cv::Point2f a = symmetry_lines[i][0];
 								cv::Point2f b = symmetry_lines[i][1];
@@ -82,14 +82,14 @@ class ShapeFitLayer {
 								}
 								float iou = 0.0f;
 								if (!util::isSimple(polygons[i]) || !util::isSimple(polygon_symmetry)){
-									std::cout << "image method" << std::endl;
+									//std::cout << "image method" << std::endl;
 									iou = util::calculateIOUbyImage(polygons[i], polygon_symmetry, 1000);
 								}
 								else{
 									iou = util::calculateIOU(polygons[i], polygon_symmetry);
-									std::cout << "cgal method" << std::endl;
+									//std::cout << "cgal method" << std::endl;
 								}
-								std::cout << "During OPT, IOU is " << iou << std::endl;
+								//std::cout << "During OPT, IOU is " << iou << std::endl;
 								score += iou * symmetryWeight;
 							}
 							else{

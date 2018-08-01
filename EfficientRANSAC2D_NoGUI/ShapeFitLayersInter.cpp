@@ -228,48 +228,47 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 			}
 		}
 		// test point
-		//{
-		//	float score = 0.0f;
-		//	std::cout << "normalized_polygons_init size is " << normalized_polygons_init.size() << std::endl;
-		//	std::cout << "config.pointDisThreshold is " << config.pointDisThreshold << std::endl;
-		//	std::cout << "max_unit is " << max_unit << std::endl;
-		//	for (int k = 0; k < normalized_polygons_init.size(); k++){
-		//		for (int i = 0; i < normalized_polygons_init[k].size(); i++){
-		//			if (normalized_polygons_init[k][i].size() != 0){
-		//				std::cout << "--------------------------" << std::endl;
-		//				// optimization score for one polygon
-		//				if (config.bUsePointSnapOpt){
-		//					int valid_num = 0;
-		//					std::cout << "Point Snap" << std::endl;
-		//					for (int j = 0; j < tree_info[k].second.size(); j++){
-		//						std::cout << "layer "<< k << " children nodes from layer " << tree_info[k].second[j] << std::endl;
-		//						float score_tmp = util::calculateScorePointOpt(normalized_polygons_init[k][i], normalized_polygons_init[k][i], normalized_polygons_init[tree_info[k].second[j]], normalized_polygons_init[tree_info[k].second[j]], config.pointDisThreshold);
-		//						if (abs(score_tmp) > 0.1){
-		//							valid_num++;
-		//							score += score_tmp;
-		//						}
-		//					}
-		//					for (int j = 0; j < tree_info[k].first.size(); j++){
-		//						std::cout << "layer " << k << " parents nodes from layer " << tree_info[k].first[j] << std::endl;
-		//						float score_tmp = util::calculateScorePointOpt(normalized_polygons_init[k][i], normalized_polygons_init[k][i], normalized_polygons_init[tree_info[k].first[j]], normalized_polygons_init[tree_info[k].first[j]], config.pointDisThreshold);
-		//						if (abs(score_tmp) > 0.1){
-		//							valid_num++;
-		//							score += score_tmp;
-		//						}
-		//					}
-		//					std::cout << "valid_num is " << valid_num << std::endl;
-		//					if (valid_num > 0){
-		//						score = score / valid_num;
-		//						score = score * config.pointWeight;
-		//					}
-		//					
-		//				}
-		//				std::cout << "--------------------------" << std::endl;
-		//			}
-		//		}
-		//	}
-		//}
-
+		/*{
+			float score = 0.0f;
+			std::cout << "normalized_polygons_init size is " << normalized_polygons_init.size() << std::endl;
+			std::cout << "config.pointDisThreshold is " << config.pointDisThreshold << std::endl;
+			std::cout << "max_unit is " << max_unit << std::endl;
+			for (int k = 0; k < normalized_polygons_init.size(); k++){
+				for (int i = 0; i < normalized_polygons_init[k].size(); i++){
+					if (normalized_polygons_init[k][i].size() != 0){
+						std::cout << "--------------------------" << std::endl;
+						// optimization score for one polygon
+						if (config.bUsePointSnapOpt){
+							int valid_num = 0;
+							std::cout << "Point Snap" << std::endl;
+							for (int j = 0; j < tree_info[k].second.size(); j++){
+								std::cout << "layer "<< k << " children nodes from layer " << tree_info[k].second[j] << std::endl;
+								float score_tmp = util::calculateScorePointOpt(normalized_polygons_init[k][i], normalized_polygons_init[k][i], normalized_polygons_init[tree_info[k].second[j]], normalized_polygons_init[tree_info[k].second[j]], config.pointDisThreshold);
+								if (abs(score_tmp) > 0.1){
+									valid_num++;
+									score += score_tmp;
+								}
+							}
+							for (int j = 0; j < tree_info[k].first.size(); j++){
+								std::cout << "layer " << k << " parents nodes from layer " << tree_info[k].first[j] << std::endl;
+								float score_tmp = util::calculateScorePointOpt(normalized_polygons_init[k][i], normalized_polygons_init[k][i], normalized_polygons_init[tree_info[k].first[j]], normalized_polygons_init[tree_info[k].first[j]], config.pointDisThreshold);
+								if (abs(score_tmp) > 0.1){
+									valid_num++;
+									score += score_tmp;
+								}
+							}
+							std::cout << "valid_num is " << valid_num << std::endl;
+							if (valid_num > 0){
+								score = score / valid_num;
+								score = score * config.pointWeight;
+							}
+							
+						}
+						std::cout << "--------------------------" << std::endl;
+					}
+				}
+			}
+		}*/
 		// test segs
 		/*{
 			float score = 0.0f;
@@ -317,15 +316,30 @@ void ShapeFitLayersInter::fit(std::vector<Layer>& layers, QString config_file)
 		else
 			find_min_using_approximate_derivatives(dlib::bfgs_search_strategy(), dlib::objective_delta_stop_strategy(1e-7), solver, starting_point, 0, 0.0001);
 		start_index = 0;
-		for (int k = 0; k < layers.size(); k++){
-			layers[k].contours_snap.resize(layers[k].contours_pre.size());
-			for (int i = 0; i < layers[k].contours_pre.size(); i++) {
-				layers[k].contours_snap[i].resize(layers[k].contours_pre[i].size());
-				for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
-					layers[k].contours_snap[i][j].x = starting_point((j + start_index) * 2) * max_unit + min_x;
-					layers[k].contours_snap[i][j].y = starting_point((j + start_index) * 2 + 1) * max_unit + min_y;
+		if (bUseIntra){
+			for (int k = 0; k < layers.size(); k++){
+				layers[k].contours_snap.resize(layers[k].contours.size());
+				for (int i = 0; i < layers[k].contours.size(); i++) {
+					layers[k].contours_snap[i].resize(layers[k].contours[i].size());
+					for (int j = 0; j < layers[k].contours[i].size(); j++){
+						layers[k].contours_snap[i][j].x = starting_point((j + start_index) * 2) * max_unit + min_x;
+						layers[k].contours_snap[i][j].y = starting_point((j + start_index) * 2 + 1) * max_unit + min_y;
+					}
+					start_index += layers[k].contours[i].size();
 				}
-				start_index += layers[k].contours_pre[i].size();
+			}
+		}
+		else{
+			for (int k = 0; k < layers.size(); k++){
+				layers[k].contours_snap.resize(layers[k].contours_pre.size());
+				for (int i = 0; i < layers[k].contours_pre.size(); i++) {
+					layers[k].contours_snap[i].resize(layers[k].contours_pre[i].size());
+					for (int j = 0; j < layers[k].contours_pre[i].size(); j++){
+						layers[k].contours_snap[i][j].x = starting_point((j + start_index) * 2) * max_unit + min_x;
+						layers[k].contours_snap[i][j].y = starting_point((j + start_index) * 2 + 1) * max_unit + min_y;
+					}
+					start_index += layers[k].contours_pre[i].size();
+				}
 			}
 		}
 	}

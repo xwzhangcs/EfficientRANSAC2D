@@ -8,6 +8,7 @@
 #include "TestBatchFiles.h"
 #include "SymmetryLineOptionDialog.h"
 #include "LayersOptionDialog.h"
+#include "MultiRunsDialog.h"
 #include <QTextStream>
 #include "../EfficientRANSAC2D_NoGUI/Regularizer.h"
 #include "../EfficientRANSAC2D_NoGUI/rapidjson/document.h"
@@ -38,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	connect(ui.actionDetectSymmetryLine, SIGNAL(triggered()), this, SLOT(onDetectSymmetryLine()));
 	connect(ui.actionLayers, SIGNAL(triggered()), this, SLOT(onTestUseLayers()));
 	connect(ui.actionCombineImages, SIGNAL(triggered()), this, SLOT(onCombineImages()));
+	connect(ui.actionMulti_Runs, SIGNAL(triggered()), this, SLOT(onMultipleRuns()));
 }
 
 void MainWindow::onOpen() {
@@ -211,7 +213,7 @@ void MainWindow::onTestUseLayers(){
 	if (dlg.exec()) {
 		// first check the sum of interWeight and intraWeight
 		float weight = 0.0f;
-		if (dlg.getUseIntraOpt())
+		/*if (dlg.getUseIntraOpt())
 			weight += dlg.getIntraWeight();
 		if (dlg.getUseInterOpt())
 			weight += dlg.getInterWeight();
@@ -222,7 +224,7 @@ void MainWindow::onTestUseLayers(){
 		else{
 			std::cout << "Please check weights for Intra and Inter!!!" << std::endl;
 			return;
-		}
+		}*/
 
 		// second check the sum of sub terms in InterWeight
 		weight = 0.0f;
@@ -458,6 +460,7 @@ void MainWindow::onCombineImages(){
 		for (int j = 0; j < base.height(); j++){
 			QColor clrCurrent(overlay.pixel(i, j));
 			if (clrCurrent.red() == 0 && clrCurrent.green() != 0 && clrCurrent.blue() != 0){
+			//if (clrCurrent.red() == 255 && clrCurrent.green() == 0 && clrCurrent.blue() == 0){
 				painter.setPen(clrCurrent);
 				painter.drawPoint(i, j);
 			}
@@ -468,6 +471,15 @@ void MainWindow::onCombineImages(){
 	}
 	painter.end();
 	base.save("../test/result.png");
+}
+
+void MainWindow::onMultipleRuns(){
+	MultiRunsDialog dlg;
+	if (dlg.exec()) {
+		std::cout << "input dir is " << dlg.ui.lineEditInput->text().toUtf8().constData() << std::endl;
+		std::cout << "output dir is " << dlg.ui.lineEditOutput->text().toUtf8().constData() << std::endl;
+		std::cout << "config file is " << dlg.ui.lineEditInputConfig->text().toUtf8().constData() << std::endl;
+	}
 }
 
 void MainWindow::onDetectSymmetryLine(){

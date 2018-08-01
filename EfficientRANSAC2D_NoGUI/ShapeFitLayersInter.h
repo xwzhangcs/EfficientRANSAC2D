@@ -106,7 +106,10 @@ class ShapeFitLayersInter {
 						}
 					}
 				}
-				score = score / valid_polygons;
+				if (valid_polygons == 0)
+					score = 0.0f;
+				else
+					score = score / valid_polygons;
 				std::cout << "valid_polygons is " << valid_polygons<<std::endl;
 				std::cout << "score is " << score << std::endl;
 				std::cout << "---------------- " << std::endl;
