@@ -63,12 +63,12 @@ void ContourGenerator::generate(const util::Polygon& polygon, const std::vector<
 					float dis_end_j = cv::norm(shapes[j].second->endPoint() - int_pt);
 					float dis_j = cv::norm(shapes[j].second->startPoint() - shapes[j].second->endPoint());
 					if (valid){
-						if (abs(dis_start_j + dis_end_j - dis_j) < 0.001){
+						if (dis_start_j < dis_end_j){
 							valid = false;
 						}
-						else if (dis_start_j < dis_end_j){
-							valid = false;
-						}
+						/*else if (abs(dis_start_j + dis_end_j - dis_j) < 0.001){
+						valid = false;
+						}*/
 						else{
 
 						}
@@ -77,12 +77,12 @@ void ContourGenerator::generate(const util::Polygon& polygon, const std::vector<
 					float dis_end_j2 = cv::norm(shapes[j2].second->endPoint() - int_pt);
 					float dis_j2 = cv::norm(shapes[j2].second->startPoint() - shapes[j2].second->endPoint());
 					if (valid){
-						if (abs(dis_start_j2 + dis_end_j2 - dis_j2) < 0.001){
+						if (dis_start_j2 > dis_end_j2){
 							valid = false;
 						}
-						else if (dis_start_j2 > dis_end_j2){
-							valid = false;
-						}
+						/*else if (abs(dis_start_j2 + dis_end_j2 - dis_j2) < 0.001){
+						valid = false;
+						}*/
 						else{
 
 						}

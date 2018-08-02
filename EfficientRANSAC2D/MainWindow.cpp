@@ -399,7 +399,7 @@ void MainWindow::onTestUseLayers(){
 
 		std::cout << strbuf.GetString() << std::endl;
 
-		QString filename_new = "../test/config.json"; 
+		QString filename_new = "../test/config_solo.json"; 
 		{
 			QFile file(filename_new);
 			file.remove();
@@ -432,8 +432,8 @@ void MainWindow::onTestUseLayers(){
 		// test layer
 		{
 			Regularizer reg;
-			reg.regularizerForLayers(fileNameList, height_info, tree_info, dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
-			//reg.regularizerForLayer("../test/1.png", dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
+			//reg.regularizerForLayers(fileNameList, height_info, tree_info, dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config_solo.json");
+			reg.regularizerForLayer("../test/038/1.png", dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config_solo.json");
 		}
 		// test layers
 	}
@@ -544,70 +544,12 @@ void MainWindow::onMultipleRuns(){
 			}
 		}
 
-		// read detect file
-		int curve_num_iterations = 0;
-		int curve_min_points = 0; 
-		float curve_max_error_ratio_to_radius = 0.0f; 
-		float curve_cluster_epsilon = 0.0f;
-		float curve_min_angle = 0.0f;
-		float curve_min_radius = 0.0f; 
-		float curve_max_radius = 0.0f;
-
-		int line_num_iterations = 0; 
-		int line_min_points  = 0; 
-		float line_max_error = 0.0f; 
-		float line_cluster_epsilon = 0.0f; 
-		float line_min_length = 0.0f; 
-		float line_angle_threshold = 0.0f;
-
-		float contour_max_error = 0.0f;
-		float contour_angle_threshold = 0.0f;
-
-		QFile file(dlg.ui.lineEditInputDetect->text());
-		if (file.open(QIODevice::ReadOnly)) {
-			QTextStream in(&file);
-			rapidjson::Document doc;
-			doc.Parse(in.readAll().toUtf8().constData());
-			//curve
-			rapidjson::Value& algs_curve = doc["Curve"];
-			curve_num_iterations = algs_curve["iterations"].GetInt();
-			curve_min_points = algs_curve["min_points"].GetInt();
-			curve_max_error_ratio_to_radius = algs_curve["max_error_ratio_to_radius"].GetFloat();
-			curve_cluster_epsilon = algs_curve["cluster_epsilon"].GetFloat();
-			curve_min_angle = algs_curve["min_angle"].GetFloat();
-			curve_min_radius = algs_curve["min_radius"].GetFloat();
-			curve_max_radius = algs_curve["max_radius"].GetFloat();
-			//line
-			rapidjson::Value& algs_line = doc["Line"];
-			line_num_iterations = algs_line["iterations"].GetInt();
-			line_min_points = algs_line["min_points"].GetInt();
-			line_max_error = algs_line["max_error"].GetFloat();
-			line_cluster_epsilon = algs_line["cluster_epsilon"].GetFloat();
-			line_min_length = algs_line["min_length"].GetFloat();
-			line_angle_threshold = algs_line["angle_threshold"].GetFloat();
-			//contour
-			rapidjson::Value& algs_contour = doc["Contour"];
-			contour_max_error = algs_contour["max_error"].GetFloat();
-			contour_angle_threshold = algs_contour["angle_threshold"].GetFloat();
-			/*std::cout << "curve_num_iterations is " << curve_num_iterations << std::endl;
-			std::cout << "curve_max_error_ratio_to_radius is " << curve_max_error_ratio_to_radius << std::endl;
-			std::cout << "curve_min_radius is " << curve_min_radius << std::endl;
-			std::cout << "line_num_iterations is " << line_num_iterations << std::endl;
-			std::cout << "line_max_error is " << line_max_error << std::endl;
-			std::cout << "line_min_length is " << line_min_length << std::endl;
-			std::cout << "contour_max_error is " << contour_max_error << std::endl;*/
-		}
-		else{
-			std::cerr << "File was not readable: " << std::endl;
-			return;
-		}
-
 		// call regularizer
 		Regularizer reg;
 		//reg.regularizerForLayers(fileNameList, height_info, tree_info, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle / 180.0 * CV_PI, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
 		//reg.regularizerForLayer("../test/1.png", dlg.getCurveNumIterations(), dlg.getCurveMinPoints(), dlg.getCurveMaxErrorRatioToRadius(), dlg.getCurveClusterEpsilon(), dlg.getCurveMinAngle() / 180.0 * CV_PI, dlg.getCurveMinRadius(), dlg.getCurveMaxRadius(), dlg.getLineNumIterations(), dlg.getLineMinPoints(), dlg.getLineMaxError(), dlg.getLineClusterEpsilon(), dlg.getLineMinLength(), dlg.getLineAngleThreshold() / 180.0 * CV_PI, dlg.getContourMaxError(), dlg.getContourAngleThreshold() / 180.0 * CV_PI, "../test/config.json");
-		reg.regularizerMultiRunsForLayers(fileNameList, height_info, tree_info, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle / 180.0 * CV_PI, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold / 180.0 * CV_PI, contour_max_error, contour_angle_threshold / 180.0 * CV_PI, dlg.ui.lineEditInputConfig->text());
-
+		//reg.regularizerMultiRunsForLayers(fileNameList, height_info, tree_info, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle / 180.0 * CV_PI, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold / 180.0 * CV_PI, contour_max_error, contour_angle_threshold / 180.0 * CV_PI, dlg.ui.lineEditInputConfig->text());
+		reg.regularizerMultiRunsForLayers(fileNameList, height_info, tree_info, dlg.ui.lineEditInputDetect->text(), dlg.ui.lineEditInputConfig->text());
 	}
 }
 

@@ -174,10 +174,90 @@ void Regularizer::regularizerForLayers(const std::vector<QString> &fileNameList,
 	}*/
 }
 
-void Regularizer::regularizerMultiRunsForLayers(const std::vector<QString> &fileNameList, const std::vector<std::pair<float, float>>& height_info, const std::vector<std::pair<std::vector<int>, std::vector<int>>>& tree_info, int curve_num_iterations, int curve_min_points, float curve_max_error_ratio_to_radius, float curve_cluster_epsilon, float curve_min_angle, float curve_min_radius, float curve_max_radius, int line_num_iterations, int line_min_points, float line_max_error, float line_cluster_epsilon, float line_min_length, float line_angle_threshold, float contour_max_error, float contour_angle_threshold, QString config_file){
+void Regularizer::regularizerMultiRunsForLayers(const std::vector<QString> &fileNameList, const std::vector<std::pair<float, float>>& height_info, const std::vector<std::pair<std::vector<int>, std::vector<int>>>& tree_info, QString detect_file, QString config_file){
 	std::vector<Layer> input_layers;
-	// create layers
-	createLayers(fileNameList, height_info, tree_info, input_layers, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, contour_max_error, contour_angle_threshold, true, 90);
+
+	// read detect file
+	int curve_num_iterations = 0;
+	int curve_min_points = 0;
+	float curve_max_error_ratio_to_radius = 0.0f;
+	float curve_cluster_epsilon = 0.0f;
+	float curve_min_angle = 0.0f;
+	float curve_min_radius = 0.0f;
+	float curve_max_radius = 0.0f;
+
+	int line_num_iterations = 0;
+	int line_min_points = 0;
+	float line_max_error = 0.0f;
+	float line_cluster_epsilon = 0.0f;
+	float line_min_length = 0.0f;
+	float line_angle_threshold = 0.0f;
+
+	float contour_max_error = 0.0f;
+	float contour_angle_threshold = 0.0f;
+
+	QFile file_detect(detect_file);
+	if (file_detect.open(QIODevice::ReadOnly)) {
+		QTextStream in(&file_detect);
+		rapidjson::Document doc;
+		doc.Parse(in.readAll().toUtf8().constData());
+		int num_layers = 0;
+		num_layers = doc["number"].GetInt();
+		std::cout << "num_layers is " << num_layers << std::endl;
+		input_layers.resize(num_layers);
+		for (int i = 1; i <= num_layers; i++){
+			QString current_detect_layer = "layer" + QString::number(i);
+			QString current_detect_file = doc[current_detect_layer.toUtf8().constData()].GetString();
+			std::cout << "current_detect_file is " << current_detect_file.toUtf8().constData() << std::endl;
+			QFile file(current_detect_file);
+			if (!file.open(QIODevice::ReadOnly)) {
+				std::cerr << "File was not readable: " << std::endl;
+				return;
+			}
+			QTextStream in(&file);
+			rapidjson::Document doc;
+			doc.Parse(in.readAll().toUtf8().constData());
+			//curve
+			rapidjson::Value& algs_curve = doc["Curve"];
+			curve_num_iterations = algs_curve["iterations"].GetInt();
+			curve_min_points = algs_curve["min_points"].GetInt();
+			curve_max_error_ratio_to_radius = algs_curve["max_error_ratio_to_radius"].GetFloat();
+			curve_cluster_epsilon = algs_curve["cluster_epsilon"].GetFloat();
+			curve_min_angle = algs_curve["min_angle"].GetFloat();
+			curve_min_radius = algs_curve["min_radius"].GetFloat();
+			curve_max_radius = algs_curve["max_radius"].GetFloat();
+			//line
+			rapidjson::Value& algs_line = doc["Line"];
+			line_num_iterations = algs_line["iterations"].GetInt();
+			line_min_points = algs_line["min_points"].GetInt();
+			line_max_error = algs_line["max_error"].GetFloat();
+			line_cluster_epsilon = algs_line["cluster_epsilon"].GetFloat();
+			line_min_length = algs_line["min_length"].GetFloat();
+			line_angle_threshold = algs_line["angle_threshold"].GetFloat();
+			//contour
+			rapidjson::Value& algs_contour = doc["Contour"];
+			contour_max_error = algs_contour["max_error"].GetFloat();
+			contour_angle_threshold = algs_contour["angle_threshold"].GetFloat();
+			/*std::cout << "curve_num_iterations is " << curve_num_iterations << std::endl;
+			std::cout << "curve_max_error_ratio_to_radius is " << curve_max_error_ratio_to_radius << std::endl;
+			std::cout << "curve_min_radius is " << curve_min_radius << std::endl;
+			std::cout << "line_num_iterations is " << line_num_iterations << std::endl;
+			std::cout << "line_max_error is " << line_max_error << std::endl;
+			std::cout << "line_min_length is " << line_min_length << std::endl;
+			std::cout << "contour_max_error is " << contour_max_error << std::endl;*/
+			createLayer(fileNameList[i - 1], input_layers[i - 1], curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle / 180.0 * CV_PI, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold / 180.0 * CV_PI, contour_max_error, contour_angle_threshold / 180.0 * CV_PI, true, 90);
+			input_layers[i - 1].top_height = height_info[i - 1].first;
+			input_layers[i - 1].bottom_height = height_info[i - 1].second;
+			input_layers[i - 1].parents = tree_info[i - 1].first;
+			input_layers[i - 1].children = tree_info[i - 1].second;
+			file.close();
+		}
+	}
+	else{
+		std::cerr << "File was not readable: " << std::endl;
+		return;
+	}
+	file_detect.close();
 	// check the number of runs
 	QFile file(config_file);
 	if (!file.open(QIODevice::ReadOnly)) {
@@ -208,18 +288,27 @@ void Regularizer::regularizerMultiRunsForLayers(const std::vector<QString> &file
 		std::cout << "intra is " << bUseIntra << ", inter is " << bUseInter << std::endl;
 		file.close();
 		if (bUseIntra){
+			std::vector<QString> layers_image_files;
+			layers_image_files.resize(input_layers.size());
 			for (int j = 0; j < input_layers.size(); j++){
 				generateContoursLayer(input_layers[j], current_config_file);
 				post_processing(input_layers[j], 10);
-				saveImage(input_layers[j], j, i);
+				layers_image_files[j] = saveImage(input_layers[j], j, i);
+				
 			}
+			// overlay images
+			overlayImages(layers_image_files, "../test/run_" + QString::number(i) + "_overlay.png");
 		}
 		else if (bUseInter){
+			std::vector<QString> layers_image_files;
+			layers_image_files.resize(input_layers.size());
 			ShapeFitLayersInter::fit(input_layers, current_config_file);
 			for (int j = 0; j < input_layers.size(); j++){
 				post_processing(input_layers[j], 10);
-				saveImage(input_layers[j], j, i);
+				layers_image_files[j] = saveImage(input_layers[j], j, i);
 			}
+			// overlay images
+			overlayImages(layers_image_files, "../test/run_" + QString::number(i) + "_overlay.png");
 		}
 		else{
 			// do nothing
@@ -336,21 +425,21 @@ void Regularizer::generateContoursLayers(std::vector<Layer>& input_layers, QStri
 	for (int i = 0; i < input_layers.size(); i++){
 		generateContoursLayer(input_layers[i], config_file);
 		post_processing(input_layers[i], 10);
-		//for (int j = 0; j < input_layers[i].contours.size(); j++){
-		//	////////// DEBUG //////////
-		//	// calculate IOU
-		//	if (input_layers[i].contours[j].size() != 0){
-		//		std::cout << "Post_processing" << std::endl;
-		//		std::cout << "Polygon " << j << std::endl;
-		//		if (util::isSimple(input_layers[i].polygons[j].contour) && util::isSimple(input_layers[i].contours[j]))
-		//			std::cout << "IOU = " << util::calculateIOU(input_layers[i].polygons[j].contour, input_layers[i].contours[j]) << std::endl;
-		//		else
-		//			std::cout << "IOU = " << util::calculateIOUbyImage(input_layers[i].polygons[j].contour, input_layers[i].contours[j], 1000) << std::endl;
-		//		std::cout << "#vertices = " << input_layers[i].contours[j].size() << std::endl;
-		//		std::cout << "-----------------------" << std::endl;
-		//	}
-		//}
-		//saveImage(input_layers[i], i, 1);
+		for (int j = 0; j < input_layers[i].contours.size(); j++){
+			////////// DEBUG //////////
+			// calculate IOU
+			if (input_layers[i].contours[j].size() != 0){
+				std::cout << "Post_processing" << std::endl;
+				std::cout << "Polygon " << j << std::endl;
+				if (util::isSimple(input_layers[i].polygons[j].contour) && util::isSimple(input_layers[i].contours[j]))
+					std::cout << "IOU = " << util::calculateIOU(input_layers[i].polygons[j].contour, input_layers[i].contours[j]) << std::endl;
+				else
+					std::cout << "IOU = " << util::calculateIOUbyImage(input_layers[i].polygons[j].contour, input_layers[i].contours[j], 1000) << std::endl;
+				std::cout << "#vertices = " << input_layers[i].contours[j].size() << std::endl;
+				std::cout << "-----------------------" << std::endl;
+			}
+		}
+		saveImage(input_layers[i], i, 1);
 	}
 	// inter layer optimizaiton
 	ShapeFitLayersInter::fit(input_layers, config_file);
@@ -388,7 +477,7 @@ void Regularizer::post_processing(Layer & layer, float angle_threshold){
 	layer.contours = new_contours;
 }
 
-void Regularizer::saveImage(Layer & layer, int index, int level){
+QString Regularizer::saveImage(Layer & layer, int index, int level){
 	QImage src = layer.orig_image;
 	QImage image(QSize(src.width(), src.height()), QImage::Format_RGB32);
 	QPixmap pixmap;
@@ -423,7 +512,8 @@ void Regularizer::saveImage(Layer & layer, int index, int level){
 		}
 	}
 	painter.end();
-	image.save("../test/run_" + QString::number(level) + "_contours_" + QString::number(index) + ".png");
+	QString image_file = "../test/run_" + QString::number(level) + "_contours_" + QString::number(index) + ".png";
+	image.save(image_file);
 
 	//{
 	//	int i = 1;
@@ -432,4 +522,34 @@ void Regularizer::saveImage(Layer & layer, int index, int level){
 	//	cv::Point2f p2 = layer.contours_pre[0][(i + 1) % layer.contours_pre[0].size()];
 	//	painter.drawLine(p1.x, p1.y, p2.x, p2.y);
 	//}
+	return image_file;
+}
+
+void Regularizer::overlayImages(const std::vector<QString>& image_files, QString output_file){
+	if (image_files.size() <= 1)
+		std::cout <<"No need to do overlay action!!!" << std::endl;
+	QPixmap base;
+	base.load(image_files[0]);
+	QPainter painter;
+	painter.begin(&base);
+	//Assume they have the same size
+	for (int k = 1; k < image_files.size(); k++){
+		QImage overlay;
+		overlay.load(image_files[k]);
+		for (int i = 0; i < base.width(); i++){
+			for (int j = 0; j < base.height(); j++){
+				QColor clrCurrent(overlay.pixel(i, j));
+				if (clrCurrent.red() == 0 && clrCurrent.green() != 0 && clrCurrent.blue() != 0){
+					//if (clrCurrent.red() == 255 && clrCurrent.green() == 0 && clrCurrent.blue() == 0){
+					painter.setPen(clrCurrent);
+					painter.drawPoint(i, j);
+				}
+				else{
+
+				}
+			}
+		}
+	}
+	painter.end();
+	base.save(output_file);
 }

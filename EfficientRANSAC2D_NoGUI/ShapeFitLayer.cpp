@@ -57,11 +57,12 @@ std::vector<std::vector<cv::Point2f>> ShapeFitLayer::fit(const std::vector<std::
 
 	// normalized_symmetry_line
 	std::vector<std::vector<cv::Point2f>> normalized_symmetry_lines;
-
+	int valid_symmetry_lines = 0;
 	if (bUseSymmetryLineOpt){
 		normalized_symmetry_lines.resize(symmetry_lines.size());
 		for (int i = 0; i < symmetry_lines.size(); i++) {
 			normalized_symmetry_lines[i].resize(symmetry_lines[i].size());
+			valid_symmetry_lines += symmetry_lines[i].size();
 			for (int j = 0; j < symmetry_lines[i].size(); j++){
 				normalized_symmetry_lines[i][j] = cv::Point2f((symmetry_lines[i][j].x - min_x) / max_unit, (symmetry_lines[i][j].y - min_y) / max_unit);
 			}
@@ -89,9 +90,14 @@ std::vector<std::vector<cv::Point2f>> ShapeFitLayer::fit(const std::vector<std::
 				}
 			}
 		}
-		if (!bValid){
+		if (!bValid && !bUseSymmetryLineOpt && !bUseAccuracyOpt){
 			std::cout << "no need to do optimizaiton for RA and parallel" << std::endl;
+			return ini_points;
 		}
+	}
+	if (bUseSymmetryLineOpt && !bUseParallelOpt && !bUseAccuracyOpt && !bUseRaOpt && valid_symmetry_lines == 0){
+		std::cout << "no need to do optimizaiton for symmetry" << std::endl;
+		return ini_points;
 	}
 
 	try {
