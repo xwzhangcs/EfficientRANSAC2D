@@ -55,14 +55,14 @@ class ShapeFitLayersInter {
 							if (config.bUsePointSnapOpt){
 								int valid_num = 0;
 								std::cout << "Point Snap" << std::endl;
-								for (int j = 0; j < tree_info[k].second.size(); j++){
+								/*for (int j = 0; j < tree_info[k].second.size(); j++){
 									std::cout << "children nodes" << std::endl;
 									float score_tmp = util::calculateScorePointOpt(polygons[k][i], init_layers_polygons[k][i], polygons[tree_info[k].second[j]], init_layers_polygons[tree_info[k].second[j]], config.pointDisThreshold);
 									if (abs(score_tmp) > 0.1){
 										valid_num++;
 										score_point += score_tmp;
 									}
-								}
+								}*/
 								for (int j = 0; j < tree_info[k].first.size(); j++){
 									std::cout << "parent nodes" << std::endl;
 									float score_tmp = util::calculateScorePointOpt(polygons[k][i], init_layers_polygons[k][i], polygons[tree_info[k].first[j]], init_layers_polygons[tree_info[k].first[j]], config.pointDisThreshold);
@@ -80,13 +80,13 @@ class ShapeFitLayersInter {
 							if (config.bUseSegSnapOpt){
 								int valid_num = 0;
 								std::cout << "Seg Snap" << std::endl;
-								for (int j = 0; j < tree_info[k].second.size(); j++){
+								/*for (int j = 0; j < tree_info[k].second.size(); j++){
 									float score_tmp = util::calculateScoreSegOpt(polygons[k][i], init_layers_polygons[k][i], polygons[tree_info[k].second[j]], init_layers_polygons[tree_info[k].second[j]], config.segDisThreshold, config.segAngleThreshold);
 									if (abs(score_tmp) > 0.1){
 										valid_num++;
 										score_seg += score_tmp;
 									}
-								}
+								}*/
 								for (int j = 0; j < tree_info[k].first.size(); j++){
 									float score_tmp = util::calculateScoreSegOpt(polygons[k][i], init_layers_polygons[k][i], polygons[tree_info[k].first[j]], init_layers_polygons[tree_info[k].first[j]], config.segDisThreshold, config.segAngleThreshold);
 									if (abs(score_tmp) > 0.1){

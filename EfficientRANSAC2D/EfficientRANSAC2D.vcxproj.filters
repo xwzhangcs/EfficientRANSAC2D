@@ -187,6 +187,9 @@
     <ClCompile Include="MultiRunsDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayersAll.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="MainWindow.qrc">
@@ -277,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_MultiRunsDialog.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayersAll.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

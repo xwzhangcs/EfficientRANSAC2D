@@ -1,4 +1,6 @@
 #include "Util.h"
+#include <QDir>
+#include <QTextStream>
 
 namespace util {
 
@@ -343,7 +345,9 @@ namespace util {
 				if (img1(r, c) == 255 || img2(r, c) == 255) union_cnt++;
 			}
 		}
-
+		if (union_cnt == 0){
+			return 0;
+		}
 		return (float)inter_cnt / union_cnt;
 	}
 
@@ -551,6 +555,8 @@ namespace util {
 		}
 		//std::cout << "score of polygon is " << score << std::endl;
 		//std::cout << "-----------------" << std::endl;
+		if (valid_segments == 0)
+			return score;
 		return score / valid_segments;
 	}
 
@@ -594,6 +600,8 @@ namespace util {
 		}
 		//std::cout << "score of polygon is " << score << std::endl;
 		//std::cout << "-----------------" << std::endl;
+		if (valid_segments == 0)
+			return score;
 		return score / valid_segments;
 	}
 	
@@ -746,11 +754,15 @@ namespace util {
 		return mirror_point;
 	}
 
-	float calculateScorePointOpt(const std::vector<cv::Point2f>& src_polygon, const std::vector<cv::Point2f>& init_src_polygon, const std::vector<std::vector<cv::Point2f>>& des_layer_polygons, const std::vector<std::vector<cv::Point2f>>& des_ini_layer_polygons, float dis_threshold){
+	float calculateScorePointOpt(const std::vector<cv::Point2f>& src_polygon, const std::vector<cv::Point2f>& init_src_polygon, const std::vector<std::vector<cv::Point2f>>& des_layer_polygons, const std::vector<std::vector<cv::Point2f>>& des_ini_layer_polygons, float threshold){
 		int valid_points = 0;
 		float score = 0.0f;
+		/*cv::Rect bbox = cv::boundingRect(src_polygon);
+		float dis_threshold = threshold * 0.01 * sqrt(bbox.width * bbox.width + bbox.height * bbox.height);*/
 		for (int k = 0; k < src_polygon.size(); k++){// current source polygon
 			for (int i = 0; i < des_layer_polygons.size(); i++){// all polygons in the destination layer
+				cv::Rect bbox = cv::boundingRect(des_layer_polygons[i]);
+				float dis_threshold = threshold * 0.01 * sqrt(bbox.width * bbox.width + bbox.height * bbox.height);
 				for (int j = 0; j < des_layer_polygons[i].size(); j++){// one polygon in the destination layer
 					bool bValid = false;
 					cv::Point2f src_init_p = init_src_polygon[k];
@@ -777,18 +789,22 @@ namespace util {
 			std::cout << "hello1" << std::endl;
 			return score;
 		}
-		std::cout << "--score is " << score<<std::endl;
-		std::cout << "--valid_points is " << valid_points << std::endl;
+		//std::cout << "--score is " << score<<std::endl;
+		//std::cout << "--valid_points is " << valid_points << std::endl;
 		return score / valid_points;
 	}
 
-	float calculateScoreSegOpt(const std::vector<cv::Point2f>& src_polygon, const std::vector<cv::Point2f>& init_src_polygon, const std::vector<std::vector<cv::Point2f>>& des_layer_polygons, const std::vector<std::vector<cv::Point2f>>& des_ini_layer_polygons, float dis_threshold, float angle_threshold){
+	float calculateScoreSegOpt(const std::vector<cv::Point2f>& src_polygon, const std::vector<cv::Point2f>& init_src_polygon, const std::vector<std::vector<cv::Point2f>>& des_layer_polygons, const std::vector<std::vector<cv::Point2f>>& des_ini_layer_polygons, float threshold, float angle_threshold){
 		float score = 0.0f;
 		int valid_segments = 0;
 		int total_seg_src = src_polygon.size();
 		for (int k = 0; k < total_seg_src; k++){// current source polygon
 			for (int i = 0; i < des_layer_polygons.size(); i++){// all polygons in the destination layer
 				int total_seg_des = des_layer_polygons[i].size();
+
+				cv::Rect bbox = cv::boundingRect(des_layer_polygons[i]);
+				float dis_threshold = threshold * 0.01 * sqrt(bbox.width * bbox.width + bbox.height * bbox.height);
+
 				for (int j = 0; j < total_seg_des; j++){// one polygon in the destination layer
 					bool bValid = false;
 					cv::Point2f src_init_start = init_src_polygon[k];
@@ -809,6 +825,7 @@ namespace util {
 						//std::cout << "angle_check failed" << std::endl;
 						continue;
 					}
+					// angle score
 					cv::Point2f src_start = src_polygon[k];
 					cv::Point2f src_end = src_polygon[(k + 1) % total_seg_src];
 					cv::Point2f des_start = des_layer_polygons[i][j];
@@ -818,14 +835,33 @@ namespace util {
 					if (angle >= angle_threshold)
 						score += 0.0f;
 					else
-						score += (angle_threshold - angle) / angle_threshold;
+						score += 0.5 * (angle_threshold - angle) / angle_threshold;
+
+					// distance score
+					float dis = distance(src_start, src_end, des_start, des_end);
+					if (dis >= dis_threshold)
+						score += 0.0f;
+					else
+						score += 0.5 * (dis_threshold - dis) / dis_threshold;
+
 					valid_segments++;
 				}
 			}
 		}
-		std::cout << "valid_segments is " << valid_segments << std::endl;
+		//std::cout << "valid_segments is " << valid_segments << std::endl;
 		if (valid_segments == 0)
 			return score;
 		return score / valid_segments;
+	}
+
+	void write_log(QString filename, QString content){
+		return;
+		QFile file(filename);
+		if (file.open(QIODevice::ReadWrite | QIODevice::Append))
+		{
+			QTextStream stream(&file);
+			stream << content << endl;
+		}
+		file.close();
 	}
 }

@@ -61,13 +61,17 @@ class ShapeFitLayer {
 						// RA opt function
 						if (bUseRaOpt){
 							//std::cout << "use RA opt" << std::endl;
-							score += util::calculateScore(polygons[i], init_polygons[i], angle_threshold_RA) * raWeight;
+							float ra_score = util::calculateScore(polygons[i], init_polygons[i], angle_threshold_RA);
+							//std::cout << "During OPT, ra_score is " << ra_score << std::endl;
+							score += ra_score * raWeight;
 							//std::cout << "score is " << score <<std::endl;
 						}
 						// parallel opt function
 						if (bUseParallelOpt){
-							std::cout << "use Parallel opt" << std::endl;
-							score += util::calculateAllScore(polygons[i], init_polygons[i], angle_threshold_parallel) * parallelWeight;
+							//std::cout << "use Parallel opt" << std::endl;
+							float parallel_score = util::calculateAllScore(polygons[i], init_polygons[i], angle_threshold_parallel);
+							//std::cout << "During OPT, parallel_score is " << parallel_score << std::endl;
+							score += parallel_score * parallelWeight;
 						}
 
 						// symmetry opt function
@@ -99,11 +103,11 @@ class ShapeFitLayer {
 						if (bUseAccuracy)
 						{
 							if (!util::isSimple(polygons[i]) || !util::isSimple(target_polygons[i])){
-								std::cout << "image method" << std::endl;
+								//std::cout << "image method" << std::endl;
 								score += util::calculateIOUbyImage(polygons[i], target_polygons[i], 1000) * accuracyWeight;
 							}
 							else{
-								std::cout << "cgal method" << std::endl;
+								//std::cout << "cgal method" << std::endl;
 								score += util::calculateIOU(polygons[i], target_polygons[i]) * accuracyWeight;
 							}
 						}
@@ -115,8 +119,9 @@ class ShapeFitLayer {
 							valid_polygons++;
 					}
 				}
-				score = score / valid_polygons;
-				//std::cout << "valid_polygons is " << valid_polygons<<std::endl;
+				if (valid_polygons > 0)
+					score = score / valid_polygons;
+				std::cout << " score is " << score << std::endl;
 				//std::cout << "---------------- " << std::endl;
 				return score;
 			}

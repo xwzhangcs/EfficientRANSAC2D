@@ -126,6 +126,7 @@
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFit.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayer.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayers.cpp" />
+    <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayersAll.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayersInter.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\SymmetryLineDetector.cpp" />
     <ClCompile Include="..\EfficientRANSAC2D_NoGUI\Util.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFit.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayer.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayers.h" />
+    <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayersAll.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\ShapeFitLayersInter.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\SymmetryLineDetector.h" />
     <ClInclude Include="..\EfficientRANSAC2D_NoGUI\Util.h" />

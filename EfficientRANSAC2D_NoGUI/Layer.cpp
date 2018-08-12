@@ -36,6 +36,13 @@ void Layer::generateLayer(QString filename, int curve_num_iterations, int curve_
 	shapes.resize(polygons.size());
 	for (int i = 0; i < polygons.size(); i++) {
 		if (polygons[i].contour.size() >= 100) {
+			//cv::Rect bbox = cv::boundingRect(polygons[i].contour);
+			//line_min_points = line_min_points * 0.01 * polygons[i].contour.size();
+			//line_cluster_epsilon = line_cluster_epsilon * 0.01 * polygons[i].contour.size();
+			//line_min_length = line_min_length * 0.01 * sqrt(bbox.width * bbox.width + bbox.height * bbox.height);
+			//std::cout << "line_min_points is " << line_min_points << std::endl;
+			//std::cout << "line_cluster_epsilon is " << line_cluster_epsilon << std::endl;
+			//std::cout << "line_min_length is " << line_min_length << std::endl;
 			shapes[i] = er.detect(polygons[i].contour, curve_num_iterations, curve_min_points, curve_max_error_ratio_to_radius, curve_cluster_epsilon, curve_min_angle, curve_min_radius, curve_max_radius, line_num_iterations, line_min_points, line_max_error, line_cluster_epsilon, line_min_length, line_angle_threshold, principal_orientations);
 		}
 	}

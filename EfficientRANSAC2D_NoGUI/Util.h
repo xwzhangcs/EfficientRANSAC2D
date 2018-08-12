@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <QWidget>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
@@ -59,4 +60,5 @@ namespace util {
 	// score for point snap
 	float calculateScorePointOpt(const std::vector<cv::Point2f>& src_polygon, const std::vector<cv::Point2f>& init_src_polygon, const std::vector<std::vector<cv::Point2f>>& des_layer_polygons, const std::vector<std::vector<cv::Point2f>>& des_ini_layer_polygons, float dis_threshold);
 	float calculateScoreSegOpt(const std::vector<cv::Point2f>& src_polygon, const std::vector<cv::Point2f>& init_src_polygon, const std::vector<std::vector<cv::Point2f>>& des_layer_polygons, const std::vector<std::vector<cv::Point2f>>& des_ini_layer_polygons, float dis_threshold, float angle_threshold);
+	void write_log(QString filename, QString content);
 }

@@ -23,6 +23,12 @@ public:
 	float bottom_height;
 	std::vector<int> parents;
 	std::vector<int> children;
+	bool bUseRaOptValid;
+	bool bUseParallelOptValid;
+	bool bUseSymmetryOptValid;
+	bool bUseAccuracyOptValid;
+	bool bUsePointOptValid;
+	bool bUseSegOptValid;
 
 public:
 	Layer();
