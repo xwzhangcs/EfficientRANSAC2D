@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MainWindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.8.0
+** Created by: Qt User Interface Compiler version 5.9.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -147,7 +147,9 @@ public:
         MainWindowClass->setWindowTitle(QApplication::translate("MainWindowClass", "Efficient RANSAC 2D", Q_NULLPTR));
         actionExit->setText(QApplication::translate("MainWindowClass", "Exit", Q_NULLPTR));
         actionOpen->setText(QApplication::translate("MainWindowClass", "Open", Q_NULLPTR));
+#ifndef QT_NO_SHORTCUT
         actionOpen->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+O", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
         actionDetectContours->setText(QApplication::translate("MainWindowClass", "Detect Contours", Q_NULLPTR));
         actionDetectCurves->setText(QApplication::translate("MainWindowClass", "Detect Curves", Q_NULLPTR));
         actionDetectLines->setText(QApplication::translate("MainWindowClass", "Detect Lines", Q_NULLPTR));
